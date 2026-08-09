@@ -22,7 +22,7 @@
   header { text-align: center; margin-bottom: 28px; }
   h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; letter-spacing: -0.02em; }
   .subtitle { color: var(--muted); margin-top: 6px; font-size: 0.95rem; }
-  .ext-display { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 16px; overflow-x: auto; font-family: ui-monospace, monospace; font-size: 0.75rem; line-height: 1.5; word-break: break-all; }
+  .ext-display { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 16px; overflow-x: auto; font-family: ui-monospace, monospace; font-size: 0.75rem; line-height: 1.5; word-break: break-all; cursor: copy; }
   .section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
   .section h2 { font-size: 1.1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .section h2::before { content: ""; width: 4px; height: 18px; background: var(--accent); border-radius: 2px; }
@@ -33,6 +33,8 @@
   .btn.secondary:hover { background: #3d444d; }
   .btn.danger { background: var(--danger); }
   .btn.danger:hover { background: #ff7b72; }
+  .btn.success { background: var(--success); }
+  .btn.success:hover { background: #56d364; }
   .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
   .file-input { display: none; }
   .drop-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 32px; text-align: center; color: var(--muted); transition: border-color 0.15s, background 0.15s; cursor: pointer; }
@@ -44,12 +46,14 @@
   .file-info { flex: 1; min-width: 180px; }
   .file-name { font-weight: 600; word-break: break-all; }
   .file-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .file-detected { font-size: 0.75rem; color: var(--accent); background: rgba(88,166,255,0.15); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; font-family: monospace; }
   .file-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .preview-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .preview-modal.open { display: flex; }
   .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); max-width: 90vw; max-height: 85vh; width: 100%; overflow: hidden; display: flex; flex-direction: column; }
-  .preview-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .preview-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
   .preview-title { font-weight: 600; word-break: break-all; }
+  .preview-detected { font-size: 0.75rem; color: var(--success); background: rgba(63,185,80,0.15); padding: 4px 10px; border-radius: 4px; font-family: monospace; display: flex; align-items: center; gap: 6px; }
   .preview-close { background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 4px; }
   .preview-close:hover { color: var(--fg); }
   .preview-content { flex: 1; overflow: auto; padding: 16px; }
@@ -65,6 +69,7 @@
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.success { border-color: var(--success); }
   .toast.error { border-color: var(--danger); }
+  .toast.warning { border-color: var(--warning); }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
   .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
   .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
@@ -84,20 +89,26 @@
   .checksums { display: grid; gap: 8px; font-family: ui-monospace, monospace; font-size: 0.8rem; }
   .checksum-item { display: flex; justify-content: space-between; padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
   .checksum-item code { word-break: break-all; }
+  .rename-section { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 16px; }
+  .rename-section h3 { margin-bottom: 12px; font-size: 1rem; }
+  .long-ext-preview { font-family: ui-monospace, monospace; font-size: 0.7rem; color: var(--muted); word-break: break-all; background: var(--card); padding: 8px; border-radius: 4px; border: 1px solid var(--border); margin: 8px 0; }
   @media (max-width: 520px) {
     .wrap { padding: 16px 12px; }
     .section { padding: 16px; }
     .file-item { flex-direction: column; align-items: flex-start; }
     .file-actions { width: 100%; justify-content: flex-start; }
+    .preview-header { flex-direction: column; align-items: flex-start; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>📁 FilenameLongAndLong</h1>
-    <p class="subtitle">世界上最长的文件扩展名 · 文件写入/预览/工具箱</p>
-    <div class="ext-display" id="extDisplay" title="点击复制"></div>
+    <h1>FilenameLongAndLong</h1>
+    <p class="subtitle">世界上最长的文件扩展名 · 文件写入/预览/工具箱/重命名</p>
+    <h6>扩展名为:</h6>
+    <p class="subtitle">.rsvgpngjpgicobmptifwebpavifrawpsdaiepsinddxcftgadngheicmp4avimovwmvflvmkvwebmmpg3gpm4vrmvbvobogvtsmp3wavaacflacoggwmam4aaifamrmidopustargzbz2xzcabisodmgimgwimapkdebrpmxlsxodtodsodprtftxtmdcsvjsonymltomlccsphprbrsswiftktscalapluadartjlhsexshbatsqlblendmamaxc4dunityuassetgodotgitmsiapprunttfotfwoffstlobjfbxgltfglbdbpemcrtkeyvmdkvdividromnessavtorrentdatbakpsb3pptenxedgocx7zfheiccppkgjsvapyzipydfrarxtml</p>
+    <div class="ext-display" id="extDisplay" title="点击复制完整扩展名"></div>
   </header>
 
   <!-- 统计卡片 -->
@@ -173,13 +184,38 @@
 
   <!-- 文件预览/拖拽上传 -->
   <div class="section">
-    <h2>👁 文件预览 / 拖拽上传</h2>
+    <h2>👁 文件预览 / 拖拽上传 (自动检测格式)</h2>
     <div class="drop-zone" id="dropZone">
       <p>📂 拖拽文件到这里，或点击选择</p>
-      <p style="font-size:0.85rem;margin-top:8px;">支持图片/视频/音频/文本/PDF/十六进制等预览</p>
+      <p style="font-size:0.85rem;margin-top:8px;">支持图片/视频/音频/文本/PDF/字体/3D模型/压缩包/十六进制等预览</p>
       <input type="file" class="file-input" id="fileInput" multiple>
     </div>
     <div class="file-list" id="fileList"></div>
+  </div>
+
+  <!-- 重命名为超长扩展名 -->
+  <div class="section rename-section" id="renameSection" style="display:none;">
+    <h2>🔄 重命名为超长扩展名</h2>
+    <p style="color:var(--muted);margin-bottom:12px;">上传任意文件，自动检测真实格式，重命名为包含该格式的超长扩展名后缀</p>
+    <div class="drop-zone" id="renameDropZone" style="padding:20px;">
+      <p>📂 拖拽文件到这里，或点击选择</p>
+      <input type="file" class="file-input" id="renameFileInput">
+    </div>
+    <div id="renamePreview" style="display:none;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+        <span id="renameIcon" style="font-size:2rem;"></span>
+        <div>
+          <div id="renameOriginalName" style="font-weight:600;"></div>
+          <div id="renameDetected" class="file-detected"></div>
+        </div>
+      </div>
+      <div class="long-ext-preview" id="longExtPreview"></div>
+      <div class="btn-row">
+        <button class="btn success" id="btnDownloadRenamed">📥 下载重命名文件</button>
+        <button class="btn secondary" id="btnPreviewRenamed">👁 预览</button>
+        <button class="btn secondary" id="btnClearRename">清除</button>
+      </div>
+    </div>
   </div>
 
   <!-- 文件工具箱 -->
@@ -238,7 +274,7 @@
 
   <!-- 扩展名列表 -->
   <div class="section">
-    <h2>📋 支持的扩展名分类</h2>
+    <h2>📋 支持的扩展名分类 (超长扩展名包含的所有格式)</h2>
     <div id="extCategories"></div>
   </div>
 </div>
@@ -247,7 +283,10 @@
 <div class="preview-modal" id="previewModal">
   <div class="preview-box">
     <div class="preview-header">
-      <span class="preview-title" id="previewTitle"></span>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="preview-title" id="previewTitle"></span>
+        <span class="preview-detected" id="previewDetected" style="display:none;"></span>
+      </div>
       <button class="preview-close" id="previewClose" aria-label="关闭">✕</button>
     </div>
     <div class="preview-content" id="previewContent"></div>
@@ -259,16 +298,163 @@
 <script>
 // ============ 常量与工具 ============
 const EXTENSION = ".rsvgpngjpgicobmptifwebpavifrawpsdaiepsinddxcftgadngheicmp4avimovwmvflvmkvwebmmpg3gpm4vrmvbvobogvtsmp3wavaacflacoggwmam4aaifamrmidopustargzbz2xzcabisodmgimgwimapkdebrpmxlsxodtodsodprtftxtmdcsvjsonymltomlccsphprbrsswiftktscalapluadartjlhsexshbatsqlblendmamaxc4dunityuassetgodotgitmsiapprunttfotfwoffstlobjfbxgltfglbdbpemcrtkeyvmdkvdividromnessavtorrentdatbakpsb3pptenxedgocx7zfheiccppkgjsvapyzipydfrarxtml";
+
+// 扩展名到分类/图标/MIME的映射
+const EXT_INFO = {
+  // 图像类
+  svg: { cat: '图像', icon: '🖼', mime: 'image/svg+xml', name: 'SVG 矢量图' },
+  png: { cat: '图像', icon: '🖼', mime: 'image/png', name: 'PNG 图片' },
+  jpg: { cat: '图像', icon: '🖼', mime: 'image/jpeg', name: 'JPEG 图片' },
+  ico: { cat: '图像', icon: '🖼', mime: 'image/x-icon', name: 'ICO 图标' },
+  bmp: { cat: '图像', icon: '🖼', mime: 'image/bmp', name: 'BMP 位图' },
+  tif: { cat: '图像', icon: '🖼', mime: 'image/tiff', name: 'TIFF 图片' },
+  webp: { cat: '图像', icon: '🖼', mime: 'image/webp', name: 'WebP 图片' },
+  avif: { cat: '图像', icon: '🖼', mime: 'image/avif', name: 'AVIF 图片' },
+  raw: { cat: '图像', icon: '🖼', mime: 'image/x-raw', name: 'RAW 相机原始' },
+  psd: { cat: '图像', icon: '🖼', mime: 'image/vnd.adobe.photoshop', name: 'PSD 文件' },
+  ai: { cat: '图像', icon: '🖼', mime: 'application/postscript', name: 'AI 矢量图' },
+  eps: { cat: '图像', icon: '🖼', mime: 'application/postscript', name: 'EPS 矢量图' },
+  indd: { cat: '图像', icon: '🖼', mime: 'application/x-indesign', name: 'InDesign 文档' },
+  xcf: { cat: '图像', icon: '🖼', mime: 'image/x-xcf', name: 'GIMP XCF' },
+  tga: { cat: '图像', icon: '🖼', mime: 'image/x-tga', name: 'TGA 图片' },
+  dng: { cat: '图像', icon: '🖼', mime: 'image/x-adobe-dng', name: 'DNG 数字负片' },
+  heic: { cat: '图像', icon: '🖼', mime: 'image/heic', name: 'HEIC 图片' },
+  // 视频类
+  mp4: { cat: '视频', icon: '🎬', mime: 'video/mp4', name: 'MP4 视频' },
+  avi: { cat: '视频', icon: '🎬', mime: 'video/x-msvideo', name: 'AVI 视频' },
+  mov: { cat: '视频', icon: '🎬', mime: 'video/quicktime', name: 'MOV 视频' },
+  wmv: { cat: '视频', icon: '🎬', mime: 'video/x-ms-wmv', name: 'WMV 视频' },
+  flv: { cat: '视频', icon: '🎬', mime: 'video/x-flv', name: 'FLV 视频' },
+  mkv: { cat: '视频', icon: '🎬', mime: 'video/x-matroska', name: 'MKV 视频' },
+  webm: { cat: '视频', icon: '🎬', mime: 'video/webm', name: 'WebM 视频' },
+  mpg: { cat: '视频', icon: '🎬', mime: 'video/mpeg', name: 'MPEG 视频' },
+  '3gp': { cat: '视频', icon: '🎬', mime: 'video/3gpp', name: '3GP 视频' },
+  m4v: { cat: '视频', icon: '🎬', mime: 'video/x-m4v', name: 'M4V 视频' },
+  rmvb: { cat: '视频', icon: '🎬', mime: 'application/vnd.rn-realmedia', name: 'RMVB 视频' },
+  vob: { cat: '视频', icon: '🎬', mime: 'video/dvd', name: 'VOB DVD视频' },
+  ogv: { cat: '视频', icon: '🎬', mime: 'video/ogg', name: 'OGV 视频' },
+  ts: { cat: '视频', icon: '🎬', mime: 'video/mp2t', name: 'TS 流媒体' },
+  // 音频类
+  mp3: { cat: '音频', icon: '🎵', mime: 'audio/mpeg', name: 'MP3 音频' },
+  wav: { cat: '音频', icon: '🎵', mime: 'audio/wav', name: 'WAV 音频' },
+  aac: { cat: '音频', icon: '🎵', mime: 'audio/aac', name: 'AAC 音频' },
+  flac: { cat: '音频', icon: '🎵', mime: 'audio/flac', name: 'FLAC 无损' },
+  ogg: { cat: '音频', icon: '🎵', mime: 'audio/ogg', name: 'OGG 音频' },
+  wma: { cat: '音频', icon: '🎵', mime: 'audio/x-ms-wma', name: 'WMA 音频' },
+  m4a: { cat: '音频', icon: '🎵', mime: 'audio/mp4', name: 'M4A 音频' },
+  aiff: { cat: '音频', icon: '🎵', mime: 'audio/aiff', name: 'AIFF 音频' },
+  amr: { cat: '音频', icon: '🎵', mime: 'audio/amr', name: 'AMR 音频' },
+  mid: { cat: '音频', icon: '🎵', mime: 'audio/midi', name: 'MIDI 音乐' },
+  opus: { cat: '音频', icon: '🎵', mime: 'audio/opus', name: 'OPUS 音频' },
+  // 压缩包类
+  zip: { cat: '压缩包', icon: '📦', mime: 'application/zip', name: 'ZIP 压缩包' },
+  '7z': { cat: '压缩包', icon: '📦', mime: 'application/x-7z-compressed', name: '7Z 压缩包' },
+  rar: { cat: '压缩包', icon: '📦', mime: 'application/x-rar-compressed', name: 'RAR 压缩包' },
+  tar: { cat: '压缩包', icon: '📦', mime: 'application/x-tar', name: 'TAR 归档' },
+  gz: { cat: '压缩包', icon: '📦', mime: 'application/gzip', name: 'GZIP 压缩' },
+  bz2: { cat: '压缩包', icon: '📦', mime: 'application/x-bzip2', name: 'BZIP2 压缩' },
+  xz: { cat: '压缩包', icon: '📦', mime: 'application/x-xz', name: 'XZ 压缩' },
+  cab: { cat: '压缩包', icon: '📦', mime: 'application/vnd.ms-cab-compressed', name: 'CAB 压缩包' },
+  iso: { cat: '压缩包', icon: '📦', mime: 'application/x-iso9660-image', name: 'ISO 镜像' },
+  dmg: { cat: '压缩包', icon: '📦', mime: 'application/x-apple-diskimage', name: 'DMG 镜像' },
+  img: { cat: '压缩包', icon: '📦', mime: 'application/octet-stream', name: 'IMG 磁盘映像' },
+  wim: { cat: '压缩包', icon: '📦', mime: 'application/x-wim', name: 'WIM 镜像' },
+  apk: { cat: '压缩包', icon: '📦', mime: 'application/vnd.android.package-archive', name: 'APK 安装包' },
+  deb: { cat: '压缩包', icon: '📦', mime: 'application/vnd.debian.binary-package', name: 'DEB 包' },
+  rpm: { cat: '压缩包', icon: '📦', mime: 'application/x-rpm', name: 'RPM 包' },
+  // 文档类
+  pdf: { cat: '文档', icon: '📕', mime: 'application/pdf', name: 'PDF 文档' },
+  doc: { cat: '文档', icon: '📄', mime: 'application/msword', name: 'Word 文档' },
+  docx: { cat: '文档', icon: '📄', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', name: 'Word 文档' },
+  ppt: { cat: '文档', icon: '📄', mime: 'application/vnd.ms-powerpoint', name: 'PPT 演示' },
+  pptx: { cat: '文档', icon: '📄', mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', name: 'PPTX 演示' },
+  xls: { cat: '文档', icon: '📄', mime: 'application/vnd.ms-excel', name: 'Excel 表格' },
+  xlsx: { cat: '文档', icon: '📄', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', name: 'Excel 表格' },
+  odt: { cat: '文档', icon: '📄', mime: 'application/vnd.oasis.opendocument.text', name: 'ODT 文档' },
+  ods: { cat: '文档', icon: '📄', mime: 'application/vnd.oasis.opendocument.spreadsheet', name: 'ODS 表格' },
+  odp: { cat: '文档', icon: '📄', mime: 'application/vnd.oasis.opendocument.presentation', name: 'ODP 演示' },
+  rtf: { cat: '文档', icon: '📄', mime: 'application/rtf', name: 'RTF 富文本' },
+  txt: { cat: '文档', icon: '📄', mime: 'text/plain', name: '文本文件' },
+  md: { cat: '文档', icon: '📄', mime: 'text/markdown', name: 'Markdown' },
+  csv: { cat: '文档', icon: '📄', mime: 'text/csv', name: 'CSV 表格' },
+  json: { cat: '文档', icon: '📄', mime: 'application/json', name: 'JSON 数据' },
+  yaml: { cat: '文档', icon: '📄', mime: 'application/yaml', name: 'YAML 配置' },
+  toml: { cat: '文档', icon: '📄', mime: 'application/toml', name: 'TOML 配置' },
+  // 编程语言类
+  c: { cat: '代码', icon: '💻', mime: 'text/x-c', name: 'C 语言' },
+  cpp: { cat: '代码', icon: '💻', mime: 'text/x-c++', name: 'C++ 代码' },
+  cs: { cat: '代码', icon: '💻', mime: 'text/x-csharp', name: 'C# 代码' },
+  java: { cat: '代码', icon: '💻', mime: 'text/x-java', name: 'Java 代码' },
+  py: { cat: '代码', icon: '💻', mime: 'text/x-python', name: 'Python 代码' },
+  js: { cat: '代码', icon: '💻', mime: 'text/javascript', name: 'JavaScript' },
+  ts: { cat: '代码', icon: '💻', mime: 'text/typescript', name: 'TypeScript' },
+  php: { cat: '代码', icon: '💻', mime: 'text/x-php', name: 'PHP 代码' },
+  rb: { cat: '代码', icon: '💻', mime: 'text/x-ruby', name: 'Ruby 代码' },
+  go: { cat: '代码', icon: '💻', mime: 'text/x-go', name: 'Go 代码' },
+  rs: { cat: '代码', icon: '💻', mime: 'text/x-rust', name: 'Rust 代码' },
+  swift: { cat: '代码', icon: '💻', mime: 'text/x-swift', name: 'Swift 代码' },
+  kt: { cat: '代码', icon: '💻', mime: 'text/x-kotlin', name: 'Kotlin 代码' },
+  scala: { cat: '代码', icon: '💻', mime: 'text/x-scala', name: 'Scala 代码' },
+  pl: { cat: '代码', icon: '💻', mime: 'text/x-perl', name: 'Perl 代码' },
+  lua: { cat: '代码', icon: '💻', mime: 'text/x-lua', name: 'Lua 代码' },
+  dart: { cat: '代码', icon: '💻', mime: 'text/x-dart', name: 'Dart 代码' },
+  jl: { cat: '代码', icon: '💻', mime: 'text/x-julia', name: 'Julia 代码' },
+  hs: { cat: '代码', icon: '💻', mime: 'text/x-haskell', name: 'Haskell 代码' },
+  ex: { cat: '代码', icon: '💻', mime: 'text/x-elixir', name: 'Elixir 代码' },
+  sh: { cat: '代码', icon: '💻', mime: 'text/x-shellscript', name: 'Shell 脚本' },
+  bat: { cat: '代码', icon: '💻', mime: 'text/x-batch', name: 'Batch 脚本' },
+  sql: { cat: '代码', icon: '💻', mime: 'text/x-sql', name: 'SQL 脚本' },
+  // 3D/模型类
+  stl: { cat: '3D模型', icon: '🎲', mime: 'model/stl', name: 'STL 3D模型' },
+  obj: { cat: '3D模型', icon: '🎲', mime: 'model/obj', name: 'OBJ 3D模型' },
+  fbx: { cat: '3D模型', icon: '🎲', mime: 'application/octet-stream', name: 'FBX 3D模型' },
+  gltf: { cat: '3D模型', icon: '🎲', mime: 'model/gltf+json', name: 'glTF 模型' },
+  glb: { cat: '3D模型', icon: '🎲', mime: 'model/gltf-binary', name: 'GLB 模型' },
+  ply: { cat: '3D模型', icon: '🎲', mime: 'model/ply', name: 'PLY 点云' },
+  pcd: { cat: '3D模型', icon: '🎲', mime: 'application/octet-stream', name: 'PCD 点云' },
+  // 其他
+  blend: { cat: '其他', icon: '📎', mime: 'application/x-blender', name: 'Blender 文件' },
+  ma: { cat: '其他', icon: '📎', mime: 'application/x-maya', name: 'Maya 场景' },
+  max: { cat: '其他', icon: '📎', mime: 'application/x-3dsmax', name: '3ds Max' },
+  c4d: { cat: '其他', icon: '📎', mime: 'application/x-cinema4d', name: 'Cinema 4D' },
+  unity: { cat: '其他', icon: '📎', mime: 'application/vnd.unity', name: 'Unity 资产' },
+  uasset: { cat: '其他', icon: '📎', mime: 'application/x-unreal-asset', name: 'Unreal 资产' },
+  godot: { cat: '其他', icon: '📎', mime: 'application/x-godot', name: 'Godot 场景' },
+  git: { cat: '其他', icon: '📎', mime: 'application/x-git', name: 'Git 仓库' },
+  msi: { cat: '其他', icon: '⚙️', mime: 'application/x-msi', name: 'MSI 安装包' },
+  app: { cat: '其他', icon: '⚙️', mime: 'application/x-mac-app', name: 'macOS App' },
+  pkg: { cat: '其他', icon: '⚙️', mime: 'application/x-pkg', name: 'macOS PKG' },
+  ttf: { cat: '其他', icon: '🔤', mime: 'font/ttf', name: 'TrueType 字体' },
+  otf: { cat: '其他', icon: '🔤', mime: 'font/otf', name: 'OpenType 字体' },
+  woff: { cat: '其他', icon: '🔤', mime: 'font/woff', name: 'WOFF 字体' },
+  exe: { cat: '其他', icon: '⚙️', mime: 'application/x-msdownload', name: 'EXE 可执行' },
+  vmdk: { cat: '其他', icon: '📦', mime: 'application/x-vmdk', name: 'VMware 磁盘' },
+  vdi: { cat: '其他', icon: '📦', mime: 'application/x-vdi', name: 'VirtualBox 磁盘' },
+  vhd: { cat: '其他', icon: '📦', mime: 'application/x-vhd', name: '虚拟硬盘' },
+  pem: { cat: '其他', icon: '🔐', mime: 'application/x-pem-file', name: 'PEM 证书' },
+  crt: { cat: '其他', icon: '🔐', mime: 'application/x-x509-ca-cert', name: 'CRT 证书' },
+  key: { cat: '其他', icon: '🔐', mime: 'application/x-pkcs8', name: '私钥文件' },
+  torrent: { cat: '其他', icon: '📎', mime: 'application/x-bittorrent', name: 'BitTorrent' },
+  dat: { cat: '其他', icon: '📎', mime: 'application/octet-stream', name: '数据文件' },
+  bak: { cat: '其他', icon: '📎', mime: 'application/octet-stream', name: '备份文件' },
+  log: { cat: '其他', icon: '📄', mime: 'text/plain', name: '日志文件' },
+  xml: { cat: '其他', icon: '📄', mime: 'application/xml', name: 'XML 文件' },
+  html: { cat: '其他', icon: '🌐', mime: 'text/html', name: 'HTML 网页' },
+  css: { cat: '其他', icon: '🎨', mime: 'text/css', name: 'CSS 样式' },
+  html: { cat: '其他', icon: '🌐', mime: 'text/html', name: 'HTML 网页' },
+};
+
 const EXT_CATEGORIES = {
   "图像类": ["svg","png","jpg","ico","bmp","tif","webp","avif","raw","psd","ai","eps","indd","xcf","tga","dng","heic"],
   "视频类": ["mp4","avi","mov","wmv","flv","mkv","webm","mpg","3gp","m4v","rmvb","vob","ogv","ts"],
   "音频类": ["mp3","wav","aac","flac","ogg","wma","m4a","aiff","amr","mid","opus"],
   "压缩包类": ["zip","7z","rar","tar","gz","bz2","xz","cab","iso","dmg","img","wim","apk","deb","rpm"],
   "文档类": ["pdf","doc","docx","ppt","pptx","xls","xlsx","odt","ods","odp","rtf","txt","md","csv","json","yaml","toml"],
-  "编程语言类": ["c","ccs","phprb","rs","swift","kt","scala","pl","lua","dart","jl","hs","ex","sh","bat","sql"],
+  "编程语言类": ["c","cpp","cs","java","py","js","ts","php","rb","go","rs","swift","kt","scala","pl","lua","dart","jl","hs","ex","sh","bat","sql"],
   "3D/模型类": ["stl","obj","fbx","gltf","glb","ply","pcd"],
-  "其他": ["blend","ma","max","c4d","unity","uasset","godot","git","msi","app","pkg","ttf","otf","woff","exe","vmdk","vdi","vhd","pem","crt","key","torrent","dat","bak","log","xml","html"]
+  "其他": ["blend","ma","max","c4d","unity","uasset","godot","git","msi","app","pkg","ttf","otf","woff","exe","vmdk","vdi","vhd","pem","crt","key","torrent","dat","bak","log","xml","html","css"]
 };
+
 const TEMPLATES = {
   html: `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -429,6 +615,7 @@ const fmtBytes = (b) => { if (b < 1024) return b + ' B'; if (b < 1024**2) return
 const toast = (msg, type = '') => { const t = $('#toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => t.classList.remove('show'), 2500); };
 const copyText = async (text) => { await navigator.clipboard.writeText(text); toast('已复制到剪贴板', 'success'); };
 const downloadBlob = (blob, filename) => { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); };
+const escapeHtml = (str) => String(str).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
 
 // ============ 扩展名显示 ============
 $('#extDisplay').textContent = EXTENSION;
@@ -450,7 +637,10 @@ $('#extCategories').innerHTML = Object.entries(EXT_CATEGORIES).map(([cat, exts])
       ${cat} <span style="color:var(--muted);font-size:0.85rem;font-weight:400;">${exts.length} 个</span>
     </summary>
     <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">
-      ${exts.map(e => `<span class="ext-tag">.${e}</span>`).join('')}
+      ${exts.map(e => {
+        const info = EXT_INFO[e] || {};
+        return `<span class="ext-tag" title="${info.name || e}">${info.icon || '📎'} .${e}</span>`;
+      }).join('')}
     </div>
   </details>
 `).join('');
@@ -473,10 +663,7 @@ $('#btnDownloadText').onclick = () => {
   let blob;
   if (encoding === 'utf-8') blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
   else if (encoding === 'utf-16') blob = new Blob([content], { type: 'text/plain;charset=utf-16' });
-  else { // GBK 近似用 utf-8，浏览器不直接支持 GBK 编码
-    blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    toast('浏览器限制：GBK 将以 UTF-8 保存', 'warning');
-  }
+  else { blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); toast('浏览器限制：GBK 将以 UTF-8 保存', 'warning'); }
   downloadBlob(blob, name);
   toast(`已下载 ${name}`);
 };
@@ -506,7 +693,6 @@ $('#btnPreviewBin').onclick = () => {
 $('#btnLoadFileBin').onclick = () => $('#binFileInputHidden').click();
 $('#btnClearBin').onclick = () => { $('#binHexInput').value = ''; toast('已清空'); };
 
-// 隐藏的文件输入用于加载二进制
 const binFileInput = document.createElement('input');
 binFileInput.type = 'file';
 binFileInput.id = 'binFileInputHidden';
@@ -546,305 +732,42 @@ $('#btnPreviewTpl').onclick = () => {
   openPreview('template.' + EXT_MAP[type], new TextEncoder().encode(TEMPLATES[type]));
 };
 
-// ============ 拖拽上传与预览 ============
-const dropZone = $('#dropZone');
-const fileInput = $('#fileInput');
-['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('drag-over'); }));
-['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('drag-over'); }));
-dropZone.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
-dropZone.onclick = () => fileInput.click();
-fileInput.onchange = e => handleFiles(e.target.files);
-
-function handleFiles(files) {
-  if (!files.length) return;
-  [...files].forEach(f => renderFileItem(f));
-  fileInput.value = '';
+// ============ 核心：MIME/格式检测 (魔数 + 扩展名双重检测) ============
+function detectFormat(bytes, filename = '') {
+  const ext = filename.split('.').pop().toLowerCase();
+  const info = EXT_INFO[ext] || {};
+  
+  // 1. 优先用魔数检测 (更可靠)
+  const magic = detectByMagic(bytes);
+  if (magic) return { ...magic, source: 'magic' };
+  
+  // 2. 回退到扩展名
+  if (info.mime) return { mime: info.mime, name: info.name, icon: info.icon, cat: info.cat, ext, source: 'extension' };
+  
+  // 3. 文本检测
+  if (isTextFile(bytes, ext)) return { mime: 'text/plain', name: '文本文件', icon: '📄', cat: '文档', ext: 'txt', source: 'text-detection' };
+  
+  return { mime: 'application/octet-stream', name: '未知二进制', icon: '📎', cat: '其他', ext: 'bin', source: 'fallback' };
 }
 
-function renderFileItem(file) {
-  const list = $('#fileList');
-  const item = document.createElement('div');
-  item.className = 'file-item';
-  const icon = getFileIcon(file.name, file.type);
-  item.innerHTML = `
-    <span class="file-icon">${icon}</span>
-    <div class="file-info">
-      <div class="file-name">${escapeHtml(file.name)}</div>
-      <div class="file-meta">${fmtBytes(file.size)} · ${file.type || '未知类型'} · 最后修改: ${new Date(file.lastModified).toLocaleString()}</div>
-    </div>
-    <div class="file-actions">
-      <button class="btn secondary btn-preview" data-name="${escapeHtml(file.name)}">👁 预览</button>
-      <button class="btn secondary btn-download" data-name="${escapeHtml(file.name)}">📥 下载</button>
-      <button class="btn secondary btn-hash" data-name="${escapeHtml(file.name)}">🔐 哈希</button>
-      <button class="btn danger btn-remove">✕</button>
-    </div>
-  `;
-  const blobUrl = URL.createObjectURL(file);
-  item.querySelector('.btn-preview').onclick = () => openPreview(file.name, file);
-  item.querySelector('.btn-download').onclick = () => downloadBlob(file.slice(), file.name);
-  item.querySelector('.btn-hash').onclick = () => computeHash(file).then(h => { toast('哈希已计算，查看工具箱', 'success'); showHashResults(file.name, h); switchTab('hash'); });
-  item.querySelector('.btn-remove').onclick = () => { URL.revokeObjectURL(blobUrl); item.remove(); };
-  list.appendChild(item);
-}
-
-function getFileIcon(name, type) {
-  const ext = name.split('.').pop().toLowerCase();
-  if (type?.startsWith('image/')) return '🖼';
-  if (type?.startsWith('video/')) return '🎬';
-  if (type?.startsWith('audio/')) return '🎵';
-  if (type?.startsWith('text/') || ['md','txt','json','js','ts','jsx','tsx','html','css','yaml','yml','toml','xml','csv','py','rs','go','java','cpp','c','h','php','rb','swift','kt','sh','bat','sql'].includes(ext)) return '📄';
-  if (['zip','7z','rar','tar','gz','bz2','xz'].includes(ext)) return '📦';
-  if (['pdf'].includes(ext)) return '📕';
-  if (['exe','msi','apk','app','dmg'].includes(ext)) return '⚙️';
-  return '📎';
-}
-
-// ============ 预览模态框 ============
-const previewModal = $('#previewModal');
-const previewTitle = $('#previewTitle');
-const previewContent = $('#previewContent');
-$('#previewClose').onclick = closePreview;
-previewModal.onclick = e => { if (e.target === previewModal) closePreview(); };
-
-function closePreview() { previewModal.classList.remove('open'); previewContent.innerHTML = ''; }
-
-async function openPreview(name, source) {
-  previewTitle.textContent = name;
-  previewContent.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--muted);">加载中...</div>';
-  previewModal.classList.add('open');
-
-  let bytes;
-  if (source instanceof File || source instanceof Blob) bytes = new Uint8Array(await source.arrayBuffer());
-  else if (source instanceof Uint8Array) bytes = source;
-  else bytes = new TextEncoder().encode(String(source));
-
-  const ext = name.split('.').pop().toLowerCase();
-  const type = detectMime(bytes, ext);
-
-  try {
-    if (type.startsWith('image/')) {
-      const url = URL.createObjectURL(new Blob([bytes], { type }));
-      previewContent.innerHTML = `<img src="${url}" alt="${escapeHtml(name)}" onload="URL.revokeObjectURL(this.src)">`;
-    } else if (type.startsWith('video/')) {
-      const url = URL.createObjectURL(new Blob([bytes], { type }));
-      previewContent.innerHTML = `<video controls autoplay src="${url}"></video>`;
-    } else if (type.startsWith('audio/')) {
-      const url = URL.createObjectURL(new Blob([bytes], { type }));
-      previewContent.innerHTML = `<audio controls autoplay src="${url}"></audio>`;
-    } else if (type === 'application/pdf') {
-      const url = URL.createObjectURL(new Blob([bytes], { type }));
-      previewContent.innerHTML = `<iframe src="${url}" style="width:100%;height:70vh;border:none;"></iframe>`;
-    } else if (isTextFile(bytes, ext)) {
-      const text = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
-      previewContent.innerHTML = `<pre>${escapeHtml(text)}</pre>`;
-    } else {
-      previewContent.innerHTML = renderHexDump(bytes);
-    }
-  } catch (e) {
-    previewContent.innerHTML = `<pre style="color:var(--danger);">预览失败: ${e.message}</pre>`;
-  }
-}
-
-function detectMime(bytes, ext) {
-  // 简单的魔数检测
-  if (bytes.length >= 4) {
-    const h = bytes[0].toString(16) + bytes[1].toString(16) + bytes[2].toString(16) + bytes[3].toString(16);
-    if (h.startsWith('89504e47')) return 'image/png';
-    if (h.startsWith('ffd8ff')) return 'image/jpeg';
-    if (h.startsWith('47494638')) return 'image/gif';
-    if (h.startsWith('52494646') && bytes[8] === 0x57 && bytes[9] === 0x45) return 'image/webp';
-    if (h.startsWith('000000') && (bytes[4] === 0x66 || bytes[4] === 0x6d)) return 'video/mp4';
-    if (h.startsWith('25504446')) return 'application/pdf';
-    if (h.startsWith('504b0304') || h.startsWith('504b0506') || h.startsWith('504b0708')) return 'application/zip';
-    if (h.startsWith('377abcaf')) return 'application/x-7z-compressed';
-    if (h.startsWith('52617221')) return 'application/x-rar';
-  }
-  const textExts = ['txt','md','json','js','ts','jsx','tsx','html','css','yaml','yml','toml','xml','csv','py','rs','go','java','cpp','c','h','php','rb','swift','kt','sh','bat','sql','log','ini','cfg','conf','properties'];
-  if (textExts.includes(ext)) return 'text/plain';
-  return 'application/octet-stream';
-}
-
-function isTextFile(bytes, ext) {
-  const textExts = ['txt','md','json','js','ts','jsx','tsx','html','css','yaml','yml','toml','xml','csv','py','rs','go','java','cpp','c','h','php','rb','swift','kt','sh','bat','sql','log','ini','cfg','conf','properties'];
-  if (textExts.includes(ext)) return true;
-  // 检测是否包含大量非打印字符
-  let nonPrint = 0;
-  for (let i = 0; i < Math.min(bytes.length, 8192); i++) {
-    const b = bytes[i];
-    if (b !== 9 && b !== 10 && b !== 13 && (b < 32 || b > 126)) nonPrint++;
-  }
-  return nonPrint / Math.min(bytes.length, 8192) < 0.1;
-}
-
-function renderHexDump(bytes) {
-  const lines = [];
-  for (let i = 0; i < bytes.length; i += 16) {
-    const chunk = bytes.slice(i, i + 16);
-    const addr = i.toString(16).padStart(8, '0').toUpperCase();
-    const hex = [...chunk].map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
-    const ascii = [...chunk].map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
-    lines.push(`<div class="hex-line"><span class="hex-addr">${addr}</span><span class="hex-bytes">${hex}</span><span class="hex-ascii">${ascii}</span></div>`);
-  }
-  return `<div class="hex">${lines.join('')}</div>`;
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
-}
-
-// ============ 哈希计算 ============
-async function computeHash(file) {
-  const buf = await file.arrayBuffer();
-  const [md5, sha1, sha256, sha512] = await Promise.all([
-    crypto.subtle.digest('MD5', buf),
-    crypto.subtle.digest('SHA-1', buf),
-    crypto.subtle.digest('SHA-256', buf),
-    crypto.subtle.digest('SHA-512', buf),
-  ]);
-  return { md5: toHex(md5), sha1: toHex(sha1), sha256: toHex(sha256), sha512: toHex(sha512) };
-}
-function toHex(buf) { return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join(''); }
-
-function showHashResults(name, hashes) {
-  $('#hashResults').innerHTML = `
-    <div style="font-weight:600;margin-bottom:8px;">${escapeHtml(name)}</div>
-    <div class="checksum-item"><span>MD5</span><code>${hashes.md5}</code></div>
-    <div class="checksum-item"><span>SHA-1</span><code>${hashes.sha1}</code></div>
-    <div class="checksum-item"><span>SHA-256</span><code>${hashes.sha256}</code></div>
-    <div class="checksum-item"><span>SHA-512</span><code>${hashes.sha512}</code></div>
-  `;
-}
-
-const hashDropZone = $('#hashDropZone');
-const hashFileInput = $('#hashFileInput');
-['dragenter','dragover'].forEach(ev => hashDropZone.addEventListener(ev, e => { e.preventDefault(); hashDropZone.classList.add('drag-over'); }));
-['dragleave','drop'].forEach(ev => hashDropZone.addEventListener(ev, e => { e.preventDefault(); hashDropZone.classList.remove('drag-over'); }));
-hashDropZone.addEventListener('drop', e => handleHashFiles(e.dataTransfer.files));
-hashDropZone.onclick = () => hashFileInput.click();
-hashFileInput.onchange = e => handleHashFiles(e.target.files);
-
-async function handleHashFiles(files) {
-  if (!files.length) return;
-  for (const f of [...files]) {
-    const h = await computeHash(f);
-    showHashResults(f.name, h);
-  }
-  hashFileInput.value = '';
-  toast(`已计算 ${files.length} 个文件哈希`, 'success');
-}
-
-// ============ 格式转换 ============
-$('#convFileInput').onchange = async (e) => {
-  const f = e.target.files[0]; if (!f) return;
-  const buf = await f.arrayBuffer();
-  const bytes = new Uint8Array(buf);
-  convertBytes(bytes, $('#convTarget').value);
-  e.target.value = '';
-};
-$('#convTarget').onchange = () => {
-  const f = $('#convFileInput').files[0];
-  if (f) { f.arrayBuffer().then(buf => convertBytes(new Uint8Array(buf), $('#convTarget').value)); }
-};
-$('#btnConvert').onclick = () => $('#convFileInput').click();
-$('#btnCopyConv').onclick = () => copyText($('#convResult').value);
-
-function convertBytes(bytes, target) {
-  let result = '';
-  switch (target) {
-    case 'base64': result = btoa(String.fromCharCode(...bytes)); break;
-    case 'hex': result = formatHex(bytes); break;
-    case 'text': result = new TextDecoder('utf-8', { fatal: false }).decode(bytes); break;
-    case 'dataurl': {
-      const mime = detectMime(bytes, '');
-      result = `data:${mime};base64,${btoa(String.fromCharCode(...bytes))}`;
-      break;
-    }
-  }
-  $('#convResult').value = result;
-  toast('转换完成');
-}
-
-// ============ 分割/合并 ============
-$('#btnSplit').onclick = async () => {
-  const f = $('#splitFileInput').files[0]; if (!f) { toast('请先选择文件', 'error'); return; }
-  const sizeKB = parseInt($('#splitSize').value) * 1024;
-  const buf = await f.arrayBuffer();
-  const bytes = new Uint8Array(buf);
-  const parts = Math.ceil(bytes.length / sizeKB);
-  const baseName = f.name.replace(/\.[^.]+$/, '');
-  for (let i = 0; i < parts; i++) {
-    const start = i * sizeKB;
-    const end = Math.min(start + sizeKB, bytes.length);
-    const part = bytes.slice(start, end);
-    downloadBlob(new Blob([part]), `${baseName}.part${String(i+1).padStart(3,'0')}`);
-  }
-  $('#splitResult').innerHTML = `<div style="color:var(--success);margin-top:8px;">已分割为 ${parts} 个文件，每个约 ${fmtBytes(sizeKB)}</div>`;
-  toast(`分割完成: ${parts} 个文件`);
-};
-
-$('#btnMerge').onclick = async () => {
-  const files = $('#splitFileInput').files; if (!files.length) { toast('请选择要合并的分片文件', 'error'); return; }
-  const sorted = [...files].sort((a,b) => a.name.localeCompare(b.name));
-  const chunks = [];
-  for (const f of sorted) chunks.push(new Uint8Array(await f.arrayBuffer()));
-  const totalLen = chunks.reduce((s, c) => s + c.length, 0);
-  const merged = new Uint8Array(totalLen);
-  let offset = 0;
-  for (const c of chunks) { merged.set(c, offset); offset += c.length; }
-  const baseName = sorted[0].name.replace(/\.part\d+$/, '');
-  downloadBlob(new Blob([merged]), baseName + '_merged');
-  $('#splitResult').innerHTML = `<div style="color:var(--success);margin-top:8px;">已合并 ${sorted.length} 个分片，总计 ${fmtBytes(totalLen)}</div>`;
-  toast('合并完成');
-};
-
-// ============ 文件信息 ============
-const infoDropZone = $('#infoDropZone');
-const infoFileInput = $('#infoFileInput');
-['dragenter','dragover'].forEach(ev => infoDropZone.addEventListener(ev, e => { e.preventDefault(); infoDropZone.classList.add('drag-over'); }));
-['dragleave','drop'].forEach(ev => infoDropZone.addEventListener(ev, e => { e.preventDefault(); infoDropZone.classList.remove('drag-over'); }));
-infoDropZone.addEventListener('drop', e => handleInfoFiles(e.dataTransfer.files));
-infoDropZone.onclick = () => infoFileInput.click();
-infoFileInput.onchange = e => handleInfoFiles(e.target.files);
-
-async function handleInfoFiles(files) {
-  if (!files.length) return;
-  const f = files[0];
-  const buf = await f.arrayBuffer();
-  const bytes = new Uint8Array(buf);
-  const ext = f.name.split('.').pop().toLowerCase();
-  const mime = detectMime(bytes, ext);
-  const hashes = await computeHash(f);
-  $('#infoResult').innerHTML = `
-    <div style="display:grid;gap:8px;font-family:ui-monospace,monospace;font-size:0.85rem;">
-      <div><b>文件名:</b> ${escapeHtml(f.name)}</div>
-      <div><b>大小:</b> ${fmtBytes(f.size)} (${f.size} 字节)</div>
-      <div><b>类型:</b> ${f.type || mime}</div>
-      <div><b>扩展名:</b> .${ext}</div>
-      <div><b>最后修改:</b> ${new Date(f.lastModified).toLocaleString()}</div>
-      <div><b>MIME 检测:</b> ${mime}</div>
-      <div><b>是否文本:</b> ${isTextFile(bytes, ext) ? '是' : '否'}</div>
-      <hr style="border-color:var(--border);margin:8px 0;">
-      <div><b>MD5:</b> ${hashes.md5}</div>
-      <div><b>SHA-1:</b> ${hashes.sha1}</div>
-      <div><b>SHA-256:</b> ${hashes.sha256}</div>
-      <div><b>SHA-512:</b> ${hashes.sha512}</div>
-      <hr style="border-color:var(--border);margin:8px 0;">
-      <div><b>文件头 (前32字节):</b></div>
-      <div class="hex">${renderHexDump(bytes.slice(0, 32)).replace(/<div class="hex">|<\/div>/g, '')}</div>
-    </div>
-  `;
-  infoFileInput.value = '';
-}
-
-function switchTab(name) {
-  const tab = document.querySelector(`.tab[data-tab="${name}"]`);
-  if (tab) tab.click();
-}
-
-// ============ 键盘快捷键 ============
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closePreview();
-});
-</script>
-</body>
-</html>
+function detectByMagic(bytes) {
+  if (bytes.length < 4) return null;
+  
+  const h = bytes[0].toString(16) + bytes[1].toString(16) + bytes[2].toString(16) + bytes[3].toString(16);
+  const h8 = h + bytes[4].toString(16) + bytes[5].toString(16) + bytes[6].toString(16) + bytes[7].toString(16);
+  const h12 = h8 + bytes[8].toString(16) + bytes[9].toString(16) + bytes[10].toString(16) + bytes[11].toString(16);
+  
+  // 图像
+  if (h.startsWith('89504e47')) return { mime: 'image/png', name: 'PNG 图片', icon: '🖼', cat: '图像', ext: 'png' };
+  if (h.startsWith('ffd8ff')) return { mime: 'image/jpeg', name: 'JPEG 图片', icon: '🖼', cat: '图像', ext: 'jpg' };
+  if (h.startsWith('47494638')) return { mime: 'image/gif', name: 'GIF 图片', icon: '🖼', cat: '图像', ext: 'gif' };
+  if (h.startsWith('52494646') && bytes[8] === 0x57 && bytes[9] === 0x45) return { mime: 'image/webp', name: 'WebP 图片', icon: '🖼', cat: '图像', ext: 'webp' };
+  if (h.startsWith('0000000c6a502020')) return { mime: 'image/jp2', name: 'JPEG 2000', icon: '🖼', cat: '图像', ext: 'jp2' };
+  if (h.startsWith('424d')) return { mime: 'image/bmp', name: 'BMP 位图', icon: '🖼', cat: '图像', ext: 'bmp' };
+  if (h.startsWith('49492a00') || h.startsWith('4d4d002a')) return { mime: 'image/tiff', name: 'TIFF 图片', icon: '🖼', cat: '图像', ext: 'tif' };
+  if (h.startsWith('3c3f786d6c') || h.startsWith('3c737667')) return { mime: 'image/svg+xml', name: 'SVG 矢量图', icon: '🖼', cat: '图像', ext: 'svg' };
+  if (h8.startsWith('52494646') && (h12.includes('41564920') || h12.includes('41564958'))) return { mime: 'video/avi', name: 'AVI 视频', icon: '🎬', cat: '视频', ext: 'avi' };
+  if (h.startsWith('464f524d')) return { mime: 'image/x-iff', name: 'IFF 图片', icon: '🖼', cat: '图像', ext: 'iff' };
+  
+  // 视频
+  if (h.startsWith('000000') && (bytes[4] === 0x66 || bytes[4] === 0x
