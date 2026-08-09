@@ -104,20 +104,16 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>FilenameLongAndLong</h1>
+    <h1>📁 FilenameLongAndLong</h1>
     <p class="subtitle">世界上最长的文件扩展名 · 文件写入/预览/工具箱/重命名</p>
-    <h6>扩展名为:</h6>
-    <p class="subtitle">.rsvgpngjpgicobmptifwebpavifrawpsdaiepsinddxcftgadngheicmp4avimovwmvflvmkvwebmmpg3gpm4vrmvbvobogvtsmp3wavaacflacoggwmam4aaifamrmidopustargzbz2xzcabisodmgimgwimapkdebrpmxlsxodtodsodprtftxtmdcsvjsonymltomlccsphprbrsswiftktscalapluadartjlhsexshbatsqlblendmamaxc4dunityuassetgodotgitmsiapprunttfotfwoffstlobjfbxgltfglbdbpemcrtkeyvmdkvdividromnessavtorrentdatbakpsb3pptenxedgocx7zfheiccppkgjsvapyzipydfrarxtml</p>
     <div class="ext-display" id="extDisplay" title="点击复制完整扩展名"></div>
   </header>
 
-  <!-- 统计卡片 -->
   <div class="section">
     <h2>文件统计</h2>
     <div class="grid" id="stats"></div>
   </div>
 
-  <!-- 文件写入/创建 -->
   <div class="section">
     <h2>✍️ 文件写入 / 创建</h2>
     <div class="tab-bar">
@@ -182,7 +178,6 @@
     </div>
   </div>
 
-  <!-- 文件预览/拖拽上传 -->
   <div class="section">
     <h2>👁 文件预览 / 拖拽上传 (自动检测格式)</h2>
     <div class="drop-zone" id="dropZone">
@@ -193,7 +188,6 @@
     <div class="file-list" id="fileList"></div>
   </div>
 
-  <!-- 重命名为超长扩展名 -->
   <div class="section rename-section" id="renameSection" style="display:none;">
     <h2>🔄 重命名为超长扩展名</h2>
     <p style="color:var(--muted);margin-bottom:12px;">上传任意文件，自动检测真实格式，重命名为包含该格式的超长扩展名后缀</p>
@@ -218,7 +212,6 @@
     </div>
   </div>
 
-  <!-- 文件工具箱 -->
   <div class="section">
     <h2>🔧 文件工具箱</h2>
     <div class="tab-bar">
@@ -272,14 +265,12 @@
     </div>
   </div>
 
-  <!-- 扩展名列表 -->
   <div class="section">
     <h2>📋 支持的扩展名分类 (超长扩展名包含的所有格式)</h2>
     <div id="extCategories"></div>
   </div>
 </div>
 
-<!-- 预览模态框 -->
 <div class="preview-modal" id="previewModal">
   <div class="preview-box">
     <div class="preview-header">
@@ -299,9 +290,7 @@
 // ============ 常量与工具 ============
 const EXTENSION = ".rsvgpngjpgicobmptifwebpavifrawpsdaiepsinddxcftgadngheicmp4avimovwmvflvmkvwebmmpg3gpm4vrmvbvobogvtsmp3wavaacflacoggwmam4aaifamrmidopustargzbz2xzcabisodmgimgwimapkdebrpmxlsxodtodsodprtftxtmdcsvjsonymltomlccsphprbrsswiftktscalapluadartjlhsexshbatsqlblendmamaxc4dunityuassetgodotgitmsiapprunttfotfwoffstlobjfbxgltfglbdbpemcrtkeyvmdkvdividromnessavtorrentdatbakpsb3pptenxedgocx7zfheiccppkgjsvapyzipydfrarxtml";
 
-// 扩展名到分类/图标/MIME的映射
 const EXT_INFO = {
-  // 图像类
   svg: { cat: '图像', icon: '🖼', mime: 'image/svg+xml', name: 'SVG 矢量图' },
   png: { cat: '图像', icon: '🖼', mime: 'image/png', name: 'PNG 图片' },
   jpg: { cat: '图像', icon: '🖼', mime: 'image/jpeg', name: 'JPEG 图片' },
@@ -319,7 +308,6 @@ const EXT_INFO = {
   tga: { cat: '图像', icon: '🖼', mime: 'image/x-tga', name: 'TGA 图片' },
   dng: { cat: '图像', icon: '🖼', mime: 'image/x-adobe-dng', name: 'DNG 数字负片' },
   heic: { cat: '图像', icon: '🖼', mime: 'image/heic', name: 'HEIC 图片' },
-  // 视频类
   mp4: { cat: '视频', icon: '🎬', mime: 'video/mp4', name: 'MP4 视频' },
   avi: { cat: '视频', icon: '🎬', mime: 'video/x-msvideo', name: 'AVI 视频' },
   mov: { cat: '视频', icon: '🎬', mime: 'video/quicktime', name: 'MOV 视频' },
@@ -334,7 +322,6 @@ const EXT_INFO = {
   vob: { cat: '视频', icon: '🎬', mime: 'video/dvd', name: 'VOB DVD视频' },
   ogv: { cat: '视频', icon: '🎬', mime: 'video/ogg', name: 'OGV 视频' },
   ts: { cat: '视频', icon: '🎬', mime: 'video/mp2t', name: 'TS 流媒体' },
-  // 音频类
   mp3: { cat: '音频', icon: '🎵', mime: 'audio/mpeg', name: 'MP3 音频' },
   wav: { cat: '音频', icon: '🎵', mime: 'audio/wav', name: 'WAV 音频' },
   aac: { cat: '音频', icon: '🎵', mime: 'audio/aac', name: 'AAC 音频' },
@@ -346,7 +333,6 @@ const EXT_INFO = {
   amr: { cat: '音频', icon: '🎵', mime: 'audio/amr', name: 'AMR 音频' },
   mid: { cat: '音频', icon: '🎵', mime: 'audio/midi', name: 'MIDI 音乐' },
   opus: { cat: '音频', icon: '🎵', mime: 'audio/opus', name: 'OPUS 音频' },
-  // 压缩包类
   zip: { cat: '压缩包', icon: '📦', mime: 'application/zip', name: 'ZIP 压缩包' },
   '7z': { cat: '压缩包', icon: '📦', mime: 'application/x-7z-compressed', name: '7Z 压缩包' },
   rar: { cat: '压缩包', icon: '📦', mime: 'application/x-rar-compressed', name: 'RAR 压缩包' },
@@ -362,7 +348,6 @@ const EXT_INFO = {
   apk: { cat: '压缩包', icon: '📦', mime: 'application/vnd.android.package-archive', name: 'APK 安装包' },
   deb: { cat: '压缩包', icon: '📦', mime: 'application/vnd.debian.binary-package', name: 'DEB 包' },
   rpm: { cat: '压缩包', icon: '📦', mime: 'application/x-rpm', name: 'RPM 包' },
-  // 文档类
   pdf: { cat: '文档', icon: '📕', mime: 'application/pdf', name: 'PDF 文档' },
   doc: { cat: '文档', icon: '📄', mime: 'application/msword', name: 'Word 文档' },
   docx: { cat: '文档', icon: '📄', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', name: 'Word 文档' },
@@ -380,7 +365,6 @@ const EXT_INFO = {
   json: { cat: '文档', icon: '📄', mime: 'application/json', name: 'JSON 数据' },
   yaml: { cat: '文档', icon: '📄', mime: 'application/yaml', name: 'YAML 配置' },
   toml: { cat: '文档', icon: '📄', mime: 'application/toml', name: 'TOML 配置' },
-  // 编程语言类
   c: { cat: '代码', icon: '💻', mime: 'text/x-c', name: 'C 语言' },
   cpp: { cat: '代码', icon: '💻', mime: 'text/x-c++', name: 'C++ 代码' },
   cs: { cat: '代码', icon: '💻', mime: 'text/x-csharp', name: 'C# 代码' },
@@ -404,7 +388,6 @@ const EXT_INFO = {
   sh: { cat: '代码', icon: '💻', mime: 'text/x-shellscript', name: 'Shell 脚本' },
   bat: { cat: '代码', icon: '💻', mime: 'text/x-batch', name: 'Batch 脚本' },
   sql: { cat: '代码', icon: '💻', mime: 'text/x-sql', name: 'SQL 脚本' },
-  // 3D/模型类
   stl: { cat: '3D模型', icon: '🎲', mime: 'model/stl', name: 'STL 3D模型' },
   obj: { cat: '3D模型', icon: '🎲', mime: 'model/obj', name: 'OBJ 3D模型' },
   fbx: { cat: '3D模型', icon: '🎲', mime: 'application/octet-stream', name: 'FBX 3D模型' },
@@ -412,7 +395,6 @@ const EXT_INFO = {
   glb: { cat: '3D模型', icon: '🎲', mime: 'model/gltf-binary', name: 'GLB 模型' },
   ply: { cat: '3D模型', icon: '🎲', mime: 'model/ply', name: 'PLY 点云' },
   pcd: { cat: '3D模型', icon: '🎲', mime: 'application/octet-stream', name: 'PCD 点云' },
-  // 其他
   blend: { cat: '其他', icon: '📎', mime: 'application/x-blender', name: 'Blender 文件' },
   ma: { cat: '其他', icon: '📎', mime: 'application/x-maya', name: 'Maya 场景' },
   max: { cat: '其他', icon: '📎', mime: 'application/x-3dsmax', name: '3ds Max' },
@@ -441,7 +423,6 @@ const EXT_INFO = {
   xml: { cat: '其他', icon: '📄', mime: 'application/xml', name: 'XML 文件' },
   html: { cat: '其他', icon: '🌐', mime: 'text/html', name: 'HTML 网页' },
   css: { cat: '其他', icon: '🎨', mime: 'text/css', name: 'CSS 样式' },
-  html: { cat: '其他', icon: '🌐', mime: 'text/html', name: 'HTML 网页' },
 };
 
 const EXT_CATEGORIES = {
@@ -617,11 +598,10 @@ const copyText = async (text) => { await navigator.clipboard.writeText(text); to
 const downloadBlob = (blob, filename) => { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); };
 const escapeHtml = (str) => String(str).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
 
-// ============ 扩展名显示 ============
+// ============ 初始化显示 ============
 $('#extDisplay').textContent = EXTENSION;
 $('#extDisplay').onclick = () => copyText(EXTENSION);
 
-// 统计
 const totalExts = Object.values(EXT_CATEGORIES).flat().length;
 $('#stats').innerHTML = `
   <div class="stat"><div class="stat-value">${EXTENSION.length}</div><div class="stat-label">扩展名总长度</div></div>
@@ -630,7 +610,6 @@ $('#stats').innerHTML = `
   <div class="stat"><div class="stat-value">1</div><div class="stat-label">文件后缀</div></div>
 `;
 
-// 扩展名分类渲染
 $('#extCategories').innerHTML = Object.entries(EXT_CATEGORIES).map(([cat, exts]) => `
   <details style="margin-bottom:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);padding:12px;">
     <summary style="cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
@@ -730,21 +709,18 @@ $('#btnDownloadTpl').onclick = () => {
 $('#btnPreviewTpl').onclick = () => {
   const type = $('#tplType').value;
   openPreview('template.' + EXT_MAP[type], new TextEncoder().encode(TEMPLATES[type]));
-};
+});
 
-// ============ 核心：MIME/格式检测 (魔数 + 扩展名双重检测) ============
+// ============ 核心：MIME/格式检测 ============
 function detectFormat(bytes, filename = '') {
   const ext = filename.split('.').pop().toLowerCase();
   const info = EXT_INFO[ext] || {};
   
-  // 1. 优先用魔数检测 (更可靠)
   const magic = detectByMagic(bytes);
   if (magic) return { ...magic, source: 'magic' };
   
-  // 2. 回退到扩展名
   if (info.mime) return { mime: info.mime, name: info.name, icon: info.icon, cat: info.cat, ext, source: 'extension' };
   
-  // 3. 文本检测
   if (isTextFile(bytes, ext)) return { mime: 'text/plain', name: '文本文件', icon: '📄', cat: '文档', ext: 'txt', source: 'text-detection' };
   
   return { mime: 'application/octet-stream', name: '未知二进制', icon: '📎', cat: '其他', ext: 'bin', source: 'fallback' };
@@ -753,15 +729,16 @@ function detectFormat(bytes, filename = '') {
 function detectByMagic(bytes) {
   if (bytes.length < 4) return null;
   
-  const h = bytes[0].toString(16) + bytes[1].toString(16) + bytes[2].toString(16) + bytes[3].toString(16);
-  const h8 = h + bytes[4].toString(16) + bytes[5].toString(16) + bytes[6].toString(16) + bytes[7].toString(16);
-  const h12 = h8 + bytes[8].toString(16) + bytes[9].toString(16) + bytes[10].toString(16) + bytes[11].toString(16);
+  const hx = (b) => b.toString(16).padStart(2, '0');
+  const h = hx(bytes[0]) + hx(bytes[1]) + hx(bytes[2]) + hx(bytes[3]);
+  const h8 = h + hx(bytes[4]) + hx(bytes[5]) + hx(bytes[6]) + hx(bytes[7]);
+  const h12 = h8 + hx(bytes[8]) + hx(bytes[9]) + hx(bytes[10]) + hx(bytes[11]);
   
   // 图像
   if (h.startsWith('89504e47')) return { mime: 'image/png', name: 'PNG 图片', icon: '🖼', cat: '图像', ext: 'png' };
   if (h.startsWith('ffd8ff')) return { mime: 'image/jpeg', name: 'JPEG 图片', icon: '🖼', cat: '图像', ext: 'jpg' };
   if (h.startsWith('47494638')) return { mime: 'image/gif', name: 'GIF 图片', icon: '🖼', cat: '图像', ext: 'gif' };
-  if (h.startsWith('52494646') && bytes[8] === 0x57 && bytes[9] === 0x45) return { mime: 'image/webp', name: 'WebP 图片', icon: '🖼', cat: '图像', ext: 'webp' };
+  if (h.startsWith('52494646') && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) return { mime: 'image/webp', name: 'WebP 图片', icon: '🖼', cat: '图像', ext: 'webp' };
   if (h.startsWith('0000000c6a502020')) return { mime: 'image/jp2', name: 'JPEG 2000', icon: '🖼', cat: '图像', ext: 'jp2' };
   if (h.startsWith('424d')) return { mime: 'image/bmp', name: 'BMP 位图', icon: '🖼', cat: '图像', ext: 'bmp' };
   if (h.startsWith('49492a00') || h.startsWith('4d4d002a')) return { mime: 'image/tiff', name: 'TIFF 图片', icon: '🖼', cat: '图像', ext: 'tif' };
@@ -770,4 +747,559 @@ function detectByMagic(bytes) {
   if (h.startsWith('464f524d')) return { mime: 'image/x-iff', name: 'IFF 图片', icon: '🖼', cat: '图像', ext: 'iff' };
   
   // 视频
-  if (h.startsWith('000000') && (bytes[4] === 0x66 || bytes[4] === 0x
+  if (h.startsWith('000000') && (bytes[4] === 0x66 || bytes[4] === 0x6d)) return { mime: 'video/mp4', name: 'MP4 视频', icon: '🎬', cat: '视频', ext: 'mp4' };
+  if (h.startsWith('52494646') && h12.includes('41564920')) return { mime: 'video/x-msvideo', name: 'AVI 视频', icon: '🎬', cat: '视频', ext: 'avi' };
+  if (h.startsWith('6d6f6f76') || h.startsWith('6d646174') || h8.startsWith('0000006d')) return { mime: 'video/quicktime', name: 'MOV 视频', icon: '🎬', cat: '视频', ext: 'mov' };
+  if (h.startsWith('3026b2758e66cf11')) return { mime: 'video/x-ms-wmv', name: 'WMV 视频', icon: '🎬', cat: '视频', ext: 'wmv' };
+  if (h.startsWith('464c5601')) return { mime: 'video/x-flv', name: 'FLV 视频', icon: '🎬', cat: '视频', ext: 'flv' };
+  if (h.startsWith('1a45dfa3')) return { mime: 'video/x-matroska', name: 'MKV/WebM 视频', icon: '🎬', cat: '视频', ext: 'mkv' };
+  if (h.startsWith('000001ba') || h.startsWith('000001b3')) return { mime: 'video/mpeg', name: 'MPEG 视频', icon: '🎬', cat: '视频', ext: 'mpg' };
+  if (h.startsWith('2e524d46')) return { mime: 'application/vnd.rn-realmedia', name: 'RMVB 视频', icon: '🎬', cat: '视频', ext: 'rmvb' };
+  if (h.startsWith('000000') && bytes.length>12 && bytes[4]===0x66 && bytes[5]===0x74 && bytes[6]===0x79 && bytes[7]===0x70) {
+    const brand = new TextDecoder().decode(bytes.slice(8, 12));
+    if (brand === '3gp' || brand.startsWith('3g')) return { mime: 'video/3gpp', name: '3GP 视频', icon: '🎬', cat: '视频', ext: '3gp' };
+    if (brand === 'M4V ' || brand === 'm4v ') return { mime: 'video/x-m4v', name: 'M4V 视频', icon: '🎬', cat: '视频', ext: 'm4v' };
+    if (brand === 'M4A ' || brand === 'm4a ') return { mime: 'audio/mp4', name: 'M4A 音频', icon: '🎵', cat: '音频', ext: 'm4a' };
+  }
+  if (h.startsWith('1a45dfa3') && bytes.length>8) {
+    const docType = new TextDecoder().decode(bytes.slice(0, Math.min(64, bytes.length)));
+    if (docType.includes('webm')) return { mime: 'video/webm', name: 'WebM 视频', icon: '🎬', cat: '视频', ext: 'webm' };
+  }
+
+  // 音频
+  if (h.startsWith('fffb') || h.startsWith('fff3') || h.startsWith('fff2') || h.startsWith('ffe3')) return { mime: 'audio/mpeg', name: 'MP3 音频', icon: '🎵', cat: '音频', ext: 'mp3' };
+  if (bytes[0]===0x49 && bytes[1]===0x44 && bytes[2]===0x33) return { mime: 'audio/mpeg', name: 'MP3 音频 (ID3)', icon: '🎵', cat: '音频', ext: 'mp3' };
+  if (h.startsWith('52494646') && bytes.length>=12 && bytes[8]===0x57 && bytes[9]===0x41 && bytes[10]===0x56 && bytes[11]===0x45) return { mime: 'audio/wav', name: 'WAV 音频', icon: '🎵', cat: '音频', ext: 'wav' };
+  if (h.startsWith('664c6143')) return { mime: 'audio/flac', name: 'FLAC 无损', icon: '🎵', cat: '音频', ext: 'flac' };
+  if (h.startsWith('4f676753')) return { mime: 'audio/ogg', name: 'OGG 音频', icon: '🎵', cat: '音频', ext: 'ogg' };
+  if (h.startsWith('4d546864')) return { mime: 'audio/midi', name: 'MIDI 音乐', icon: '🎵', cat: '音频', ext: 'mid' };
+  if (h.startsWith('2321414d')) return { mime: 'audio/amr', name: 'AMR 音频', icon: '🎵', cat: '音频', ext: 'amr' };
+  if (h.startsWith('464f524d') && bytes.length>=12 && bytes[8]===0x41 && bytes[9]===0x49 && bytes[10]===0x46 && bytes[11]===0x46) return { mime: 'audio/aiff', name: 'AIFF 音频', icon: '🎵', cat: '音频', ext: 'aiff' };
+  if (h8.startsWith('3026b2758e66cf11')) return { mime: 'audio/x-ms-wma', name: 'WMA 音频', icon: '🎵', cat: '音频', ext: 'wma' };
+
+  // 压缩包/归档
+  if (h.startsWith('504b0304')) return { mime: 'application/zip', name: 'ZIP 压缩包', icon: '📦', cat: '压缩包', ext: 'zip' };
+  if (h.startsWith('504b0506')) return { mime: 'application/zip', name: 'ZIP 压缩包', icon: '📦', cat: '压缩包', ext: 'zip' };
+  if (h.startsWith('377abcaf271c')) return { mime: 'application/x-7z-compressed', name: '7Z 压缩包', icon: '📦', cat: '压缩包', ext: '7z' };
+  if (h.startsWith('526172211a07')) return { mime: 'application/x-rar-compressed', name: 'RAR 压缩包', icon: '📦', cat: '压缩包', ext: 'rar' };
+  if (h.startsWith('1f8b')) return { mime: 'application/gzip', name: 'GZIP 压缩', icon: '📦', cat: '压缩包', ext: 'gz' };
+  if (h.startsWith('425a68')) return { mime: 'application/x-bzip2', name: 'BZIP2 压缩', icon: '📦', cat: '压缩包', ext: 'bz2' };
+  if (h.startsWith('fd377a585a')) return { mime: 'application/x-xz', name: 'XZ 压缩', icon: '📦', cat: '压缩包', ext: 'xz' };
+  if (h.startsWith('4d534346')) return { mime: 'application/vnd.ms-cab-compressed', name: 'CAB 压缩包', icon: '📦', cat: '压缩包', ext: 'cab' };
+  if (h.startsWith('213c617263683e0a')) return { mime: 'application/x-debian-package', name: 'DEB 包', icon: '📦', cat: '压缩包', ext: 'deb' };
+  if (h.startsWith('edabeedb')) return { mime: 'application/x-rpm', name: 'RPM 包', icon: '📦', cat: '压缩包', ext: 'rpm' };
+  if (h.startsWith('1f9d') || h.startsWith('1fa0')) return { mime: 'application/x-compress', name: 'LZ 压缩', icon: '📦', cat: '压缩包', ext: 'lz' };
+  if (bytes.length>=265 && bytes[257]===0x75 && bytes[258]===0x73 && bytes[259]===0x74 && bytes[260]===0x61 && bytes[261]===0x72) return { mime: 'application/x-tar', name: 'TAR 归档', icon: '📦', cat: '压缩包', ext: 'tar' };
+
+  // 文档
+  if (h.startsWith('255044462d')) return { mime: 'application/pdf', name: 'PDF 文档', icon: '📕', cat: '文档', ext: 'pdf' };
+  if (h.startsWith('7b5c7274')) return { mime: 'application/rtf', name: 'RTF 富文本', icon: '📄', cat: '文档', ext: 'rtf' };
+  if (h8.startsWith('d0cf11e0a1b11ae1')) return { mime: 'application/msword', name: 'Office 文档 (DOC/XLS/PPT)', icon: '📄', cat: '文档', ext: 'doc' };
+
+  // 3D 模型
+  if (h.startsWith('676c5446')) return { mime: 'model/gltf-binary', name: 'GLB 3D模型', icon: '🎲', cat: '3D模型', ext: 'glb' };
+  if (h.startsWith('706c79')) return { mime: 'model/ply', name: 'PLY 点云', icon: '🎲', cat: '3D模型', ext: 'ply' };
+
+  // 字体
+  if (h.startsWith('00010000')) return { mime: 'font/ttf', name: 'TrueType 字体', icon: '🔤', cat: '其他', ext: 'ttf' };
+  if (h.startsWith('4f54544f')) return { mime: 'font/otf', name: 'OpenType 字体', icon: '🔤', cat: '其他', ext: 'otf' };
+  if (h.startsWith('774f4646')) return { mime: 'font/woff', name: 'WOFF 字体', icon: '🔤', cat: '其他', ext: 'woff' };
+  if (h.startsWith('774f4632')) return { mime: 'font/woff2', name: 'WOFF2 字体', icon: '🔤', cat: '其他', ext: 'woff2' };
+
+  // 可执行文件/其他
+  if (h.startsWith('4d5a')) return { mime: 'application/x-msdownload', name: 'EXE/DLL 可执行', icon: '⚙️', cat: '其他', ext: 'exe' };
+  if (h.startsWith('7f454c46')) return { mime: 'application/x-elf', name: 'ELF 可执行', icon: '⚙️', cat: '其他', ext: 'elf' };
+  if (h.startsWith('cafebabe') || h.startsWith('cafed00d') || h.startsWith('feedface') || h.startsWith('feedfacf')) return { mime: 'application/x-mach-o', name: 'Mach-O 可执行', icon: '⚙️', cat: '其他', ext: 'macho' };
+  if (h.startsWith('64383a616e6e6f756e6365')) return { mime: 'application/x-bittorrent', name: 'BitTorrent 种子', icon: '📎', cat: '其他', ext: 'torrent' };
+
+  return null;
+}
+
+function isTextFile(bytes, ext) {
+  // BOM 检测
+  if (bytes.length>=3 && bytes[0]===0xEF && bytes[1]===0xBB && bytes[2]===0xBF) return true;
+  if (bytes.length>=2 && bytes[0]===0xFF && bytes[1]===0xFE) return true;
+  if (bytes.length>=2 && bytes[0]===0xFE && bytes[1]===0xFF) return true;
+  // 已知文本扩展名
+  const textExts = new Set(['txt','md','csv','json','yaml','yml','toml','xml','html','htm','css','js','mjs','cjs','ts','tsx','jsx','py','rb','php','java','c','cpp','h','hpp','cs','go','rs','swift','kt','scala','pl','lua','dart','jl','hs','ex','sh','bat','sql','r','m','mm','cfg','ini','conf','log','env','gitignore','dockerfile','makefile','cmake','tex','bib','rst','org','svg','gltf','obj','mtl']);
+  if (textExts.has(ext)) return true;
+  // 扫描前 512 字节，有 null 字节则为二进制
+  const sample = bytes.slice(0, Math.min(512, bytes.length));
+  for (let i = 0; i < sample.length; i++) {
+    if (sample[i] === 0) return false;
+  }
+  let printable = 0;
+  for (let i = 0; i < sample.length; i++) {
+    const b = sample[i];
+    if ((b >= 32 && b <= 126) || b === 9 || b === 10 || b === 13) printable++;
+  }
+  return printable / sample.length > 0.85;
+}
+
+function buildHexPreview(bytes) {
+  const maxBytes = Math.min(bytes.length, 65536);
+  let html = '';
+  for (let i = 0; i < maxBytes; i += 16) {
+    const addr = i.toString(16).padStart(8, '0').toUpperCase();
+    let hexPart = '', asciiPart = '';
+    for (let j = 0; j < 16; j++) {
+      if (i + j < maxBytes) {
+        const b = bytes[i + j];
+        hexPart += b.toString(16).padStart(2, '0').toUpperCase() + ' ';
+        asciiPart += (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.';
+      } else {
+        hexPart += '   ';
+        asciiPart += ' ';
+      }
+    }
+    html += '<div class="hex-line"><span class="hex-addr">' + addr + '</span><span class="hex-bytes">' + hexPart + '</span><span class="hex-ascii">' + asciiPart + '</span></div>';
+  }
+  if (bytes.length > maxBytes) html += '<div style="color:var(--muted);margin-top:8px;">... 仅显示前 ' + fmtBytes(maxBytes) + '，总大小 ' + fmtBytes(bytes.length) + '</div>';
+  return html;
+}
+
+// ============ 核心：预览弹窗 ============
+let currentPreviewFile = null;
+
+function openPreview(filename, bytes) {
+  const info = detectFormat(bytes, filename);
+  const modal = $('#previewModal');
+  const content = $('#previewContent');
+  const title = $('#previewTitle');
+  const detected = $('#previewDetected');
+
+  title.textContent = filename;
+  detected.style.display = 'flex';
+  detected.innerHTML = info.icon + ' ' + info.name + ' <span style="color:var(--muted);font-size:0.7rem;">(' + info.mime + ')</span> 检测: ' + (info.source==='magic'?'魔数':info.source==='extension'?'扩展名':'文本检测');
+
+  const mime = info.mime;
+  const blob = new Blob([bytes], { type: mime });
+  const url = URL.createObjectURL(blob);
+  content.innerHTML = '';
+
+  if (mime.startsWith('image/') && mime !== 'image/svg+xml') {
+    const img = document.createElement('img');
+    img.src = url;
+    img.onload = function() { URL.revokeObjectURL(url); };
+    img.onerror = function() { content.innerHTML = '<p style="color:var(--muted);text-align:center;">无法预览此图片格式</p>' + buildHexPreview(bytes); URL.revokeObjectURL(url); };
+    content.appendChild(img);
+  } else if (mime === 'image/svg+xml') {
+    const txt = new TextDecoder().decode(bytes);
+    content.innerHTML = '<pre>' + escapeHtml(txt) + '</pre><div style="text-align:center;margin-top:12px;"><div style="display:inline-block;max-width:100%;">' + txt + '</div></div>';
+    URL.revokeObjectURL(url);
+  } else if (mime.startsWith('video/')) {
+    const video = document.createElement('video');
+    video.src = url;
+    video.controls = true;
+    video.style.width = '100%';
+    video.style.maxHeight = '70vh';
+    video.onloadedmetadata = function() { URL.revokeObjectURL(url); };
+    video.onerror = function() { content.innerHTML = '<p style="color:var(--muted);text-align:center;">无法预览此视频格式</p>' + buildHexPreview(bytes); URL.revokeObjectURL(url); };
+    content.appendChild(video);
+  } else if (mime.startsWith('audio/')) {
+    const audio = document.createElement('audio');
+    audio.src = url;
+    audio.controls = true;
+    audio.style.width = '100%';
+    audio.onloadedmetadata = function() { URL.revokeObjectURL(url); };
+    audio.onerror = function() { content.innerHTML = '<p style="color:var(--muted);text-align:center;">无法预览此音频格式</p>' + buildHexPreview(bytes); URL.revokeObjectURL(url); };
+    const div = document.createElement('div');
+    div.style.cssText = 'text-align:center;padding:40px;';
+    div.innerHTML = '<div style="font-size:3rem;margin-bottom:16px;">' + info.icon + '</div>';
+    div.appendChild(audio);
+    content.appendChild(div);
+  } else if (mime === 'application/pdf') {
+    const embed = document.createElement('embed');
+    embed.src = url;
+    embed.type = 'application/pdf';
+    embed.style.cssText = 'width:100%;height:70vh;';
+    embed.onerror = function() { content.innerHTML = '<p style="color:var(--muted);text-align:center;">无法预览PDF，请下载后查看</p>' + buildHexPreview(bytes); URL.revokeObjectURL(url); };
+    content.appendChild(embed);
+  } else if (mime.startsWith('font/')) {
+    content.innerHTML = '<div style="text-align:center;padding:20px;"><div style="font-size:3rem;margin-bottom:16px;">' + info.icon + '</div><p style="font-size:2rem;font-family:CustomFont,serif;">@font-face 预览</p></div>';
+    const style = document.createElement('style');
+    style.textContent = '@font-face { font-family: "CustomFont"; src: url(' + url + '); }';
+    document.head.appendChild(style);
+    setTimeout(function() { document.head.removeChild(style); URL.revokeObjectURL(url); }, 5000);
+  } else if (mime.startsWith('model/')) {
+    content.innerHTML = '<div style="text-align:center;padding:40px;"><div style="font-size:3rem;margin-bottom:16px;">' + info.icon + '</div><p style="color:var(--muted);">3D模型预览需要专用工具</p><p style="color:var(--muted);font-size:0.85rem;margin-top:8px;">文件大小: ' + fmtBytes(bytes.length) + '</p></div>' + buildHexPreview(bytes);
+    URL.revokeObjectURL(url);
+  } else if (mime.startsWith('text/') || mime === 'application/json' || mime === 'application/xml' || mime === 'application/yaml' || mime === 'application/toml') {
+    const txt = new TextDecoder().decode(bytes);
+    content.innerHTML = '<pre>' + escapeHtml(txt) + '</pre>';
+    URL.revokeObjectURL(url);
+  } else {
+    // 二进制：十六进制预览
+    content.innerHTML = buildHexPreview(bytes);
+    URL.revokeObjectURL(url);
+  }
+
+  modal.classList.add('open');
+  currentPreviewFile = { filename: filename, bytes: bytes };
+}
+
+$('#previewClose').onclick = function() { $('#previewModal').classList.remove('open'); currentPreviewFile = null; };
+$('#previewModal').onclick = function(e) { if (e.target === $('#previewModal')) { $('#previewModal').classList.remove('open'); currentPreviewFile = null; } };
+
+// ============ 文件拖拽上传 ============
+const uploadedFiles = new Map();
+let fileIdCounter = 0;
+
+function setupDropZone(dropZoneEl, fileInputEl, onFiles) {
+  dropZoneEl.addEventListener('click', function() { fileInputEl.click(); });
+  dropZoneEl.addEventListener('dragover', function(e) { e.preventDefault(); e.stopPropagation(); dropZoneEl.classList.add('drag-over'); });
+  dropZoneEl.addEventListener('dragleave', function(e) { e.preventDefault(); e.stopPropagation(); dropZoneEl.classList.remove('drag-over'); });
+  dropZoneEl.addEventListener('drop', function(e) {
+    e.preventDefault(); e.stopPropagation();
+    dropZoneEl.classList.remove('drag-over');
+    if (e.dataTransfer.files.length > 0) onFiles(e.dataTransfer.files);
+  });
+  fileInputEl.addEventListener('change', function(e) {
+    if (e.target.files.length > 0) onFiles(e.target.files);
+    e.target.value = '';
+  });
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(function(file) {
+    const id = ++fileIdCounter;
+    file.arrayBuffer().then(function(buf) {
+      const bytes = new Uint8Array(buf);
+      const info = detectFormat(bytes, file.name);
+      const fileObj = { id: id, file: file, bytes: bytes, info: info };
+      uploadedFiles.set(id, fileObj);
+      renderFileItem(fileObj);
+    });
+  });
+}
+
+function renderFileItem(f) {
+  const container = $('#fileList');
+  const div = document.createElement('div');
+  div.className = 'file-item';
+  div.id = 'file-item-' + f.id;
+  div.innerHTML =
+    '<div class="file-icon">' + f.info.icon + '</div>' +
+    '<div class="file-info">' +
+      '<div class="file-name">' + escapeHtml(f.file.name) + '</div>' +
+      '<div class="file-meta">' + fmtBytes(f.file.size) + ' · ' + (f.file.type || '未知类型') + ' · ' + new Date(f.file.lastModified).toLocaleString('zh-CN') + '</div>' +
+      '<div class="file-detected">' + f.info.icon + ' ' + f.info.name + ' (' + f.info.mime + ') · 检测: ' + (f.info.source==='magic'?'魔数':f.info.source==='extension'?'扩展名':'文本') + '</div>' +
+    '</div>' +
+    '<div class="file-actions">' +
+      '<button class="btn" data-action="preview" data-id="' + f.id + '">👁 预览</button>' +
+      '<button class="btn secondary" data-action="download" data-id="' + f.id + '">📥 下载</button>' +
+      '<button class="btn secondary" data-action="rename" data-id="' + f.id + '">🔄 重命名</button>' +
+      '<button class="btn danger" data-action="remove" data-id="' + f.id + '">✕</button>' +
+    '</div>';
+
+  div.querySelector('[data-action="preview"]').onclick = function() { openPreview(f.file.name, f.bytes); };
+  div.querySelector('[data-action="download"]').onclick = function() { downloadBlob(new Blob([f.bytes], { type: f.info.mime }), f.file.name); };
+  div.querySelector('[data-action="rename"]').onclick = function() { setupRenameFile(f); };
+  div.querySelector('[data-action="remove"]').onclick = function() { uploadedFiles.delete(f.id); div.remove(); };
+
+  container.appendChild(div);
+}
+
+setupDropZone($('#dropZone'), $('#fileInput'), handleFiles);
+
+// ============ 重命名功能 ============
+let renameFileObj = null;
+
+function setupRenameFile(f) {
+  renameFileObj = f;
+  const section = $('#renameSection');
+  section.style.display = 'block';
+  $('#renamePreview').style.display = 'block';
+  $('#renameIcon').textContent = f.info.icon;
+  $('#renameOriginalName').textContent = f.file.name;
+  $('#renameDetected').innerHTML = f.info.icon + ' ' + f.info.name + ' (' + f.info.mime + ')';
+  const longExt = '.' + f.info.ext + EXTENSION;
+  $('#longExtPreview').textContent = f.file.name.replace(/\.[^.]+$/, '') + longExt;
+  section.scrollIntoView({ behavior: 'smooth' });
+}
+
+setupDropZone($('#renameDropZone'), $('#renameFileInput'), function(files) {
+  if (files.length === 0) return;
+  const file = files[0];
+  file.arrayBuffer().then(function(buf) {
+    const bytes = new Uint8Array(buf);
+    const info = detectFormat(bytes, file.name);
+    renameFileObj = { id: ++fileIdCounter, file: file, bytes: bytes, info: info };
+    const section = $('#renameSection');
+    section.style.display = 'block';
+    $('#renamePreview').style.display = 'block';
+    $('#renameIcon').textContent = info.icon;
+    $('#renameOriginalName').textContent = file.name;
+    $('#renameDetected').innerHTML = info.icon + ' ' + info.name + ' (' + info.mime + ')';
+    const longExt = '.' + info.ext + EXTENSION;
+    $('#longExtPreview').textContent = file.name.replace(/\.[^.]+$/, '') + longExt;
+    section.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+$('#btnDownloadRenamed').onclick = function() {
+  if (!renameFileObj) { toast('请先上传文件', 'warning'); return; }
+  const info = renameFileObj.info;
+  const longExt = '.' + info.ext + EXTENSION;
+  const newName = renameFileObj.file.name.replace(/\.[^.]+$/, '') + longExt;
+  downloadBlob(new Blob([renameFileObj.bytes], { type: info.mime }), newName);
+  toast('已下载: ' + newName.slice(0, 50) + '...', 'success');
+};
+
+$('#btnPreviewRenamed').onclick = function() {
+  if (!renameFileObj) { toast('请先上传文件', 'warning'); return; }
+  openPreview(renameFileObj.file.name, renameFileObj.bytes);
+};
+
+$('#btnClearRename').onclick = function() {
+  renameFileObj = null;
+  $('#renameSection').style.display = 'none';
+  $('#renamePreview').style.display = 'none';
+  $('#renameFileInput').value = '';
+};
+
+// ============ 工具箱：哈希校验 ============
+async function computeHash(bytes, algo) {
+  const buf = await crypto.subtle.digest(algo, bytes);
+  return [...new Uint8Array(buf)].map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+setupDropZone($('#hashDropZone'), $('#hashFileInput'), async function(files) {
+  const results = $('#hashResults');
+  results.innerHTML = '<div style="text-align:center;color:var(--muted);padding:12px;">计算中...</div>';
+
+  for (var i = 0; i < files.length; i++) {
+    const file = files[i];
+    const buf = await file.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+
+    const [md5, sha1, sha256, sha512] = await Promise.all([
+      computeHash(bytes, 'MD5'),
+      computeHash(bytes, 'SHA-1'),
+      computeHash(bytes, 'SHA-256'),
+      computeHash(bytes, 'SHA-512')
+    ]);
+
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;';
+    div.innerHTML =
+      '<div style="font-weight:600;margin-bottom:8px;word-break:break-all;">' + escapeHtml(file.name) + ' <span style="color:var(--muted);font-weight:400;">(' + fmtBytes(file.size) + ')</span></div>' +
+      '<div class="checksums">' +
+        '<div class="checksum-item"><span>MD5</span><code>' + md5 + '</code></div>' +
+        '<div class="checksum-item"><span>SHA-1</span><code>' + sha1 + '</code></div>' +
+        '<div class="checksum-item"><span>SHA-256</span><code>' + sha256 + '</code></div>' +
+        '<div class="checksum-item"><span>SHA-512</span><code style="font-size:0.7rem;">' + sha512 + '</code></div>' +
+      '</div>';
+    results.appendChild(div);
+  }
+
+  const loading = results.querySelector('div');
+  if (loading && loading.textContent === '计算中...') loading.remove();
+});
+
+// ============ 工具箱：格式转换 ============
+$('#btnConvert').onclick = async function() {
+  const file = $('#convFileInput').files[0];
+  if (!file) { toast('请先选择文件', 'warning'); return; }
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  const target = $('#convTarget').value;
+  let result = '';
+
+  try {
+    switch (target) {
+      case 'base64':
+        result = btoa(String.fromCharCode.apply(null, bytes));
+        break;
+      case 'hex':
+        result = formatHex(bytes);
+        break;
+      case 'text':
+        result = new TextDecoder().decode(bytes);
+        break;
+      case 'dataurl': {
+        const info = detectFormat(bytes, file.name);
+        const b64 = btoa(String.fromCharCode.apply(null, bytes));
+        result = 'data:' + info.mime + ';base64,' + b64;
+        break;
+      }
+    }
+    $('#convResult').value = result;
+    toast('转换完成', 'success');
+  } catch (e) {
+    toast('转换失败: ' + e.message, 'error');
+  }
+};
+
+$('#btnCopyConv').onclick = function() {
+  const val = $('#convResult').value;
+  if (!val) { toast('没有可复制的内容', 'warning'); return; }
+  copyText(val);
+};
+
+// ============ 工具箱：分割/合并 ============
+let splitChunks = [];
+$('#btnSplit').onclick = async function() {
+  const file = $('#splitFileInput').files[0];
+  if (!file) { toast('请先选择文件', 'warning'); return; }
+  const chunkSize = parseInt($('#splitSize').value) * 1024;
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  splitChunks = [];
+
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.slice(i, Math.min(i + chunkSize, bytes.length));
+    splitChunks.push(chunk);
+  }
+
+  for (let i = 0; i < splitChunks.length; i++) {
+    downloadBlob(new Blob([splitChunks[i]]), file.name + '.part' + String(i + 1).padStart(3, '0'));
+  }
+
+  $('#splitResult').innerHTML = '<div style="color:var(--success);margin-top:12px;padding:12px;background:var(--bg);border-radius:6px;">已分割为 ' + splitChunks.length + ' 个分片，正在下载...</div>';
+  toast('已分割为 ' + splitChunks.length + ' 个分片', 'success');
+};
+
+$('#btnMerge').onclick = function() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.multiple = true;
+  input.onchange = async function(e) {
+    const files = Array.from(e.target.files);
+    if (files.length < 2) { toast('请至少选择2个文件进行合并', 'warning'); return; }
+
+    files.sort(function(a, b) { return a.name.localeCompare(b.name); });
+
+    const chunks = [];
+    for (var i = 0; i < files.length; i++) {
+      const buf = await files[i].arrayBuffer();
+      chunks.push(new Uint8Array(buf));
+    }
+
+    const totalLen = chunks.reduce(function(s, c) { return s + c.length; }, 0);
+    const merged = new Uint8Array(totalLen);
+    let offset = 0;
+    for (var i = 0; i < chunks.length; i++) {
+      merged.set(chunks[i], offset);
+      offset += chunks[i].length;
+    }
+
+    const baseName = files[0].name.replace(/\.part\d+$/i, '');
+    downloadBlob(new Blob([merged]), 'merged_' + baseName);
+    $('#splitResult').innerHTML = '<div style="color:var(--success);margin-top:12px;padding:12px;background:var(--bg);border-radius:6px;">已合并 ' + files.length + ' 个文件，总大小: ' + fmtBytes(totalLen) + '，正在下载...</div>';
+    toast('已合并 ' + files.length + ' 个文件', 'success');
+  };
+  input.click();
+};
+
+// ============ 工具箱：文件信息 ============
+setupDropZone($('#infoDropZone'), $('#infoFileInput'), async function(files) {
+  const file = files[0];
+  if (!file) return;
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  const info = detectFormat(bytes, file.name);
+
+  $('#infoResult').innerHTML =
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:12px;">' +
+      '<h3 style="margin-bottom:12px;display:flex;align-items:center;gap:8px;"><span style="font-size:2rem;">' + info.icon + '</span> ' + escapeHtml(file.name) + '</h3>' +
+      '<div class="checksums">' +
+        '<div class="checksum-item"><span>文件大小</span><span>' + fmtBytes(file.size) + ' (' + file.size.toLocaleString() + ' 字节)</span></div>' +
+        '<div class="checksum-item"><span>检测格式</span><span>' + info.icon + ' ' + info.name + '</span></div>' +
+        '<div class="checksum-item"><span>MIME 类型</span><span>' + info.mime + '</span></div>' +
+        '<div class="checksum-item"><span>分类</span><span>' + info.cat + '</span></div>' +
+        '<div class="checksum-item"><span>检测方式</span><span>' + (info.source==='magic'?'魔数检测':info.source==='extension'?'扩展名匹配':'文本检测') + '</span></div>' +
+        '<div class="checksum-item"><span>最后修改</span><span>' + new Date(file.lastModified).toLocaleString('zh-CN') + '</span></div>' +
+        '<div class="checksum-item"><span>原始类型</span><span>' + (file.type || '未知') + '</span></div>' +
+      '</div>' +
+    '</div>';
+});
+
+// ============ 键盘快捷键 ============
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = $('#previewModal');
+    if (modal.classList.contains('open')) {
+      modal.classList.remove('open');
+      currentPreviewFile = null;
+    }
+  }
+});
+
+// ============ 实时预览面板 ============
+// 文本输入实时预览
+(function() {
+  const panel = document.createElement('div');
+  panel.id = 'txtLivePreview';
+  panel.style.cssText = 'margin-top:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;display:none;';
+  panel.innerHTML = '<div style="font-weight:600;margin-bottom:8px;color:var(--muted);">📄 实时预览</div><div id="txtLivePreviewContent" style="white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,monospace;font-size:0.85rem;max-height:300px;overflow:auto;"></div>';
+  $('#txtContent').parentElement.appendChild(panel);
+
+  let timeout;
+  $('#txtContent').addEventListener('input', function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(function() {
+      const val = $('#txtContent').value;
+      if (val.trim()) {
+        panel.style.display = 'block';
+        const bytes = new TextEncoder().encode(val);
+        const info = detectFormat(bytes, $('#txtFilename').value || 'preview.txt');
+        $('#txtLivePreviewContent').innerHTML = '<div class="file-detected" style="margin-bottom:8px;">' + info.icon + ' ' + info.name + ' (' + info.mime + ') · 检测: ' + (info.source==='magic'?'魔数':'文本检测') + '</div><pre style="margin:0;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,monospace;font-size:0.85rem;">' + escapeHtml(val) + '</pre>';
+      } else {
+        panel.style.display = 'none';
+      }
+    }, 300);
+  });
+})();
+
+// 二进制输入实时预览
+(function() {
+  const panel = document.createElement('div');
+  panel.id = 'binLivePreview';
+  panel.style.cssText = 'margin-top:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;display:none;';
+  panel.innerHTML = '<div style="font-weight:600;margin-bottom:8px;color:var(--muted);">🔢 实时十六进制预览</div><div id="binLivePreviewContent" style="max-height:300px;overflow:auto;"></div>';
+  $('#binHexInput').parentElement.appendChild(panel);
+
+  let timeout;
+  $('#binHexInput').addEventListener('input', function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(function() {
+      const val = $('#binHexInput').value.trim();
+      if (val) {
+        try {
+          const bytes = parseHexInput(val);
+          panel.style.display = 'block';
+          const info = detectFormat(bytes, $('#binFilename').value || 'data.bin');
+          $('#binLivePreviewContent').innerHTML = '<div class="file-detected" style="margin-bottom:8px;">' + info.icon + ' ' + info.name + ' (' + info.mime + ') · ' + fmtBytes(bytes.length) + '</div><div class="hex">' + buildHexPreview(bytes) + '</div>';
+        } catch (e) {
+          panel.style.display = 'block';
+          $('#binLivePreviewContent').innerHTML = '<div style="color:var(--danger);">无效的十六进制输入</div>';
+        }
+      } else {
+        panel.style.display = 'none';
+      }
+    }, 300);
+  });
+})();
+
+// 模板选择预览
+$('#tplType').addEventListener('change', function() {
+  const type = $('#tplType').value;
+  const content = TEMPLATES[type];
+  if (content) {
+    const panel = $('#panel-template');
+    let preview = panel.querySelector('.tpl-live-preview');
+    if (!preview) {
+      preview = document.createElement('div');
+      preview.className = 'tpl-live-preview';
+      preview.style.cssText = 'margin-top:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;';
+      preview.innerHTML = '<div style="font-weight:600;margin-bottom:8px;color:var(--muted);">📄 模板预览</div><pre id="tplLivePreviewContent" style="margin:0;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,monospace;font-size:0.8rem;max-height:250px;overflow:auto;"></pre>';
+      panel.appendChild(preview);
+    }
+    $('#tplLivePreviewContent').innerHTML = escapeHtml(content);
+  }
+});
+$('#tplType').dispatchEvent(new Event('change'));
+</script>
+</body>
+</html>
