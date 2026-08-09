@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FilenameLongAndLong - 世界上最长的文件扩展名</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117; --fg: #e6edf3; --muted: #8b949e;
+    --card: #161b22; --border: #30363d; --accent: #58a6ff;
+    --accent-hover: #79c0ff; --danger: #f85149; --success: #3fb950;
+    --warning: #d29922; --radius: 10px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #f6f8fa; --fg: #1f2328; --muted: #656d76;
+      --card: #fff; --border: #d0d7de; --accent: #0969da;
+      --accent-hover: #0969da; --danger: #cf222e; --success: #2da44e; --warning: #9a6700; }
+  }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; line-height: 1.6; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 24px 16px; }
+  header { text-align: center; margin-bottom: 28px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; letter-spacing: -0.02em; }
+  .subtitle { color: var(--muted); margin-top: 6px; font-size: 0.95rem; }
+  .ext-display { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 16px; overflow-x: auto; font-family: ui-monospace, monospace; font-size: 0.75rem; line-height: 1.5; word-break: break-all; }
+  .section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .section h2 { font-size: 1.1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .section h2::before { content: ""; width: 4px; height: 18px; background: var(--accent); border-radius: 2px; }
+  .btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: background 0.15s, transform 0.05s; }
+  .btn:hover { background: var(--accent-hover); }
+  .btn:active { transform: scale(0.98); }
+  .btn.secondary { background: var(--border); color: var(--fg); }
+  .btn.secondary:hover { background: #3d444d; }
+  .btn.danger { background: var(--danger); }
+  .btn.danger:hover { background: #ff7b72; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .file-input { display: none; }
+  .drop-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 32px; text-align: center; color: var(--muted); transition: border-color 0.15s, background 0.15s; cursor: pointer; }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: rgba(88, 166, 255, 0.08); color: var(--accent); }
+  .drop-zone.drag-over { transform: scale(1.01); }
+  .file-list { margin-top: 16px; }
+  .file-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .file-icon { font-size: 1.5rem; }
+  .file-info { flex: 1; min-width: 180px; }
+  .file-name { font-weight: 600; word-break: break-all; }
+  .file-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .file-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .preview-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .preview-modal.open { display: flex; }
+  .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); max-width: 90vw; max-height: 85vh; width: 100%; overflow: hidden; display: flex; flex-direction: column; }
+  .preview-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .preview-title { font-weight: 600; word-break: break-all; }
+  .preview-close { background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 4px; }
+  .preview-close:hover { color: var(--fg); }
+  .preview-content { flex: 1; overflow: auto; padding: 16px; }
+  .preview-content img { max-width: 100%; max-height: 70vh; display: block; margin: 0 auto; }
+  .preview-content video, .preview-content audio { width: 100%; max-height: 70vh; }
+  .preview-content pre { white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, monospace; font-size: 0.85rem; line-height: 1.6; background: var(--bg); padding: 12px; border-radius: 6px; border: 1px solid var(--border); overflow-x: auto; max-height: 70vh; }
+  .preview-content .hex { font-family: ui-monospace, monospace; font-size: 0.75rem; line-height: 1.7; }
+  .preview-content .hex-line { display: flex; gap: 8px; }
+  .preview-content .hex-addr { color: var(--muted); min-width: 60px; }
+  .preview-content .hex-bytes { flex: 1; }
+  .preview-content .hex-ascii { color: var(--muted); font-family: ui-monospace, monospace; min-width: 48px; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--card); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); transform: translateY(100px); opacity: 0; transition: 0.2s; z-index: 2000; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--success); }
+  .toast.error { border-color: var(--danger); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+  .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .ext-tag { display: inline-block; background: rgba(88,166,255,0.15); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-family: monospace; margin: 2px; }
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-wrap: wrap; }
+  .tab { padding: 8px 14px; background: none; border: none; color: var(--muted); cursor: pointer; border-radius: 6px 6px 0 0; font-size: 0.85rem; transition: 0.15s; }
+  .tab.active { color: var(--accent); background: rgba(88,166,255,0.1); border-bottom: 2px solid var(--accent); }
+  .tab:hover:not(.active) { color: var(--fg); background: var(--bg); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fade 0.15s; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .builder-form { display: grid; gap: 12px; }
+  .builder-form label { display: grid; gap: 6px; font-size: 0.9rem; }
+  .builder-form input, .builder-form textarea, .builder-form select { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; color: var(--fg); font-family: inherit; }
+  .builder-form textarea { min-height: 120px; font-family: ui-monospace, monospace; font-size: 0.85rem; }
+  .checksums { display: grid; gap: 8px; font-family: ui-monospace, monospace; font-size: 0.8rem; }
+  .checksum-item { display: flex; justify-content: space-between; padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
+  .checksum-item code { word-break: break-all; }
+  @media (max-width: 520px) {
+    .wrap { padding: 16px 12px; }
+    .section { padding: 16px; }
+    .file-item { flex-direction: column; align-items: flex-start; }
+    .file-actions { width: 100%; justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📁 FilenameLongAndLong</h1>
+    <p class="subtitle">世界上最长的文件扩展名 · 文件写入/预览/工具箱</p>
+    <div class="ext-display" id="extDisplay" title="点击复制"></div>
+  </header>
+
+  <!-- 统计卡片 -->
+  <div class="section">
+    <h2>文件统计</h2>
+    <div class="grid" id="stats"></div>
+  </div>
+
+  <!-- 文件写入/创建 -->
+  <div class="section">
+    <h2>✍️ 文件写入 / 创建</h2>
+    <div class="tab-bar">
+      <button class="tab active" data-tab="text">文本内容</button>
+      <button class="tab" data-tab="binary">二进制/十六进制</button>
+      <button class="tab" data-tab="template">模板生成</button>
+    </div>
+    <div class="tab-panel active" id="panel-text">
+      <div class="builder-form">
+        <label>文件名 <input type="text" id="txtFilename" placeholder="example.txt" value="hello.txt"></label>
+        <label>内容<textarea id="txtContent" placeholder="输入文件内容...">Hello, FilenameLongAndLong!
+这是一个测试文件。
+支持多行文本。</textarea></label>
+        <label>编码
+          <select id="txtEncoding">
+            <option value="utf-8">UTF-8</option>
+            <option value="gbk">GBK</option>
+            <option value="utf-16">UTF-16</option>
+          </select>
+        </label>
+        <div class="btn-row">
+          <button class="btn" id="btnDownloadText">📥 下载文件</button>
+          <button class="btn secondary" id="btnPreviewText">👁 预览</button>
+          <button class="btn secondary" id="btnClearText">清空</button>
+        </div>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-binary">
+      <div class="builder-form">
+        <label>文件名 <input type="text" id="binFilename" placeholder="example.bin" value="data.bin"></label>
+        <label>十六进制输入 (空格/换行分隔)<textarea id="binHexInput" placeholder="48 65 6C 6C 6F 20 57 6F 72 6C 64
+0A 00 01 02 FF FE FD"></textarea></label>
+        <div class="btn-row">
+          <button class="btn" id="btnDownloadBin">📥 下载二进制文件</button>
+          <button class="btn secondary" id="btnPreviewBin">👁 预览十六进制</button>
+          <button class="btn secondary" id="btnLoadFileBin">📂 从文件加载</button>
+          <button class="btn secondary" id="btnClearBin">清空</button>
+        </div>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-template">
+      <div class="builder-form">
+        <label>模板类型
+          <select id="tplType">
+            <option value="html">HTML5 页面</option>
+            <option value="css">CSS 重置</option>
+            <option value="js">ES6 模块</option>
+            <option value="json">package.json</option>
+            <option value="md">README.md</option>
+            <option value="gitignore">.gitignore</option>
+            <option value="dockerfile">Dockerfile</option>
+            <option value="license">MIT License</option>
+            <option value="svg">SVG 图标</option>
+          </select>
+        </label>
+        <label>文件名 <input type="text" id="tplFilename" placeholder="自动根据模板填充"></label>
+        <div class="btn-row">
+          <button class="btn" id="btnDownloadTpl">📥 生成并下载</button>
+          <button class="btn secondary" id="btnPreviewTpl">👁 预览</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 文件预览/拖拽上传 -->
+  <div class="section">
+    <h2>👁 文件预览 / 拖拽上传</h2>
+    <div class="drop-zone" id="dropZone">
+      <p>📂 拖拽文件到这里，或点击选择</p>
+      <p style="font-size:0.85rem;margin-top:8px;">支持图片/视频/音频/文本/PDF/十六进制等预览</p>
+      <input type="file" class="file-input" id="fileInput" multiple>
+    </div>
+    <div class="file-list" id="fileList"></div>
+  </div>
+
+  <!-- 文件工具箱 -->
+  <div class="section">
+    <h2>🔧 文件工具箱</h2>
+    <div class="tab-bar">
+      <button class="tab active" data-tab="hash">哈希校验</button>
+      <button class="tab" data-tab="convert">格式转换</button>
+      <button class="tab" data-tab="split">分割/合并</button>
+      <button class="tab" data-tab="info">文件信息</button>
+    </div>
+    <div class="tab-panel active" id="panel-hash">
+      <div class="drop-zone" id="hashDropZone" style="padding:20px;">
+        <p>📂 拖拽文件计算哈希值</p>
+        <input type="file" class="file-input" id="hashFileInput" multiple>
+      </div>
+      <div class="checksums" id="hashResults"></div>
+    </div>
+    <div class="tab-panel" id="panel-convert">
+      <div class="builder-form">
+        <label>源文件 <input type="file" id="convFileInput"></label>
+        <label>目标格式
+          <select id="convTarget">
+            <option value="base64">Base64 编码</option>
+            <option value="hex">十六进制</option>
+            <option value="text">UTF-8 文本</option>
+            <option value="dataurl">Data URL</option>
+          </select>
+        </label>
+        <div class="btn-row">
+          <button class="btn" id="btnConvert">🔄 转换</button>
+          <button class="btn secondary" id="btnCopyConv">📋 复制结果</button>
+        </div>
+        <label>结果<textarea id="convResult" readonly placeholder="转换结果将显示这里..."></textarea></label>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-split">
+      <div class="builder-form">
+        <label>要分割的文件 <input type="file" id="splitFileInput"></label>
+        <label>分割大小 (KB) <input type="number" id="splitSize" value="1024" min="1" max="1048576"></label>
+        <div class="btn-row">
+          <button class="btn" id="btnSplit">✂️ 分割文件</button>
+          <button class="btn secondary" id="btnMerge">🔗 合并文件</button>
+        </div>
+        <div id="splitResult"></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-info">
+      <div class="drop-zone" id="infoDropZone" style="padding:20px;">
+        <p>📂 拖拽文件查看详细信息</p>
+        <input type="file" class="file-input" id="infoFileInput">
+      </div>
+      <div id="infoResult"></div>
+    </div>
+  </div>
+
+  <!-- 扩展名列表 -->
+  <div class="section">
+    <h2>📋 支持的扩展名分类</h2>
+    <div id="extCategories"></div>
+  </div>
+</div>
+
+<!-- 预览模态框 -->
+<div class="preview-modal" id="previewModal">
+  <div class="preview-box">
+    <div class="preview-header">
+      <span class="preview-title" id="previewTitle"></span>
+      <button class="preview-close" id="previewClose" aria-label="关闭">✕</button>
+    </div>
+    <div class="preview-content" id="previewContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ 常量与工具 ============
+const EXTENSION = ".rsvgpngjpgicobmptifwebpavifrawpsdaiepsinddxcftgadngheicmp4avimovwmvflvmkvwebmmpg3gpm4vrmvbvobogvtsmp3wavaacflacoggwmam4aaifamrmidopustargzbz2xzcabisodmgimgwimapkdebrpmxlsxodtodsodprtftxtmdcsvjsonymltomlccsphprbrsswiftktscalapluadartjlhsexshbatsqlblendmamaxc4dunityuassetgodotgitmsiapprunttfotfwoffstlobjfbxgltfglbdbpemcrtkeyvmdkvdividromnessavtorrentdatbakpsb3pptenxedgocx7zfheiccppkgjsvapyzipydfrarxtml";
+const EXT_CATEGORIES = {
+  "图像类": ["svg","png","jpg","ico","bmp","tif","webp","avif","raw","psd","ai","eps","indd","xcf","tga","dng","heic"],
+  "视频类": ["mp4","avi","mov","wmv","flv","mkv","webm","mpg","3gp","m4v","rmvb","vob","ogv","ts"],
+  "音频类": ["mp3","wav","aac","flac","ogg","wma","m4a","aiff","amr","mid","opus"],
+  "压缩包类": ["zip","7z","rar","tar","gz","bz2","xz","cab","iso","dmg","img","wim","apk","deb","rpm"],
+  "文档类": ["pdf","doc","docx","ppt","pptx","xls","xlsx","odt","ods","odp","rtf","txt","md","csv","json","yaml","toml"],
+  "编程语言类": ["c","ccs","phprb","rs","swift","kt","scala","pl","lua","dart","jl","hs","ex","sh","bat","sql"],
+  "3D/模型类": ["stl","obj","fbx","gltf","glb","ply","pcd"],
+  "其他": ["blend","ma","max","c4d","unity","uasset","godot","git","msi","app","pkg","ttf","otf","woff","exe","vmdk","vdi","vhd","pem","crt","key","torrent","dat","bak","log","xml","html"]
+};
+const TEMPLATES = {
+  html: `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>页面标题</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Hello World</h1>
+  <p>由 FilenameLongAndLong 生成</p>
+  <script>
+    console.log('页面已加载');
+  <\/script>
+</body>
+</html>`,
+  css: `/* CSS Reset */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body { line-height: 1.5; font-family: system-ui, sans-serif; }
+img, picture, video, canvas, svg { display: block; max-width: 100%; }
+input, button, textarea, select { font: inherit; }
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+#root, #__next { isolation: isolate; }`,
+  js: `// ES6 Module Template
+export function greet(name = 'World') {
+  return \`Hello, \${name}!\`;
+}
+
+export class Counter {
+  #count = 0;
+  increment() { return ++this.#count; }
+  get count() { return this.#count; }
+}
+
+export default { greet, Counter };` ,
+  json: `{
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "Generated by FilenameLongAndLong",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No tests\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}`,
+  md: `# 项目名称
+
+> 由 FilenameLongAndLong 生成
+
+## 简介
+
+项目描述...
+
+## 安装
+
+\`\`\`bash
+npm install
+\`\`\`
+
+## 使用
+
+\`\`\`js
+import { greet } from './index.js';
+console.log(greet());
+\`\`\`
+
+## 许可证
+
+MIT`,
+  gitignore: `# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+build/
+*.local
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+
+# Misc
+*.pem
+.env
+.env.local
+.env.*.local`,
+  dockerfile: `# 生成于 FilenameLongAndLong
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]`,
+  license: `MIT License
+
+Copyright (c) ${new Date().getFullYear()} FilenameLongAndLong
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`,
+  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+  <path d="M8 21h8"/>
+  <path d="M12 17v4"/>
+</svg>`
+};
+const EXT_MAP = { html: 'html', css: 'css', js: 'js', json: 'json', md: 'md', gitignore: 'gitignore', dockerfile: 'Dockerfile', license: 'LICENSE', svg: 'svg' };
+
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+const fmtBytes = (b) => { if (b < 1024) return b + ' B'; if (b < 1024**2) return (b/1024).toFixed(1) + ' KB'; if (b < 1024**3) return (b/1024**2).toFixed(1) + ' MB'; return (b/1024**3).toFixed(1) + ' GB'; };
+const toast = (msg, type = '') => { const t = $('#toast'); t.textContent = msg; t.className = 'toast show ' + type; setTimeout(() => t.classList.remove('show'), 2500); };
+const copyText = async (text) => { await navigator.clipboard.writeText(text); toast('已复制到剪贴板', 'success'); };
+const downloadBlob = (blob, filename) => { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); };
+
+// ============ 扩展名显示 ============
+$('#extDisplay').textContent = EXTENSION;
+$('#extDisplay').onclick = () => copyText(EXTENSION);
+
+// 统计
+const totalExts = Object.values(EXT_CATEGORIES).flat().length;
+$('#stats').innerHTML = `
+  <div class="stat"><div class="stat-value">${EXTENSION.length}</div><div class="stat-label">扩展名总长度</div></div>
+  <div class="stat"><div class="stat-value">${totalExts}</div><div class="stat-label">覆盖扩展名数</div></div>
+  <div class="stat"><div class="stat-value">${Object.keys(EXT_CATEGORIES).length}</div><div class="stat-label">分类数量</div></div>
+  <div class="stat"><div class="stat-value">1</div><div class="stat-label">文件后缀</div></div>
+`;
+
+// 扩展名分类渲染
+$('#extCategories').innerHTML = Object.entries(EXT_CATEGORIES).map(([cat, exts]) => `
+  <details style="margin-bottom:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);padding:12px;">
+    <summary style="cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
+      ${cat} <span style="color:var(--muted);font-size:0.85rem;font-weight:400;">${exts.length} 个</span>
+    </summary>
+    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">
+      ${exts.map(e => `<span class="ext-tag">.${e}</span>`).join('')}
+    </div>
+  </details>
+`).join('');
+
+// ============ 标签页切换 ============
+$$('.tab-bar').forEach(bar => {
+  bar.addEventListener('click', e => {
+    const tab = e.target.closest('.tab'); if (!tab) return;
+    const panelId = tab.dataset.tab;
+    $$('.tab', bar).forEach(t => t.classList.toggle('active', t === tab));
+    $$('.tab-panel', bar.parentElement).forEach(p => p.classList.toggle('active', p.id === 'panel-' + panelId));
+  });
+});
+
+// ============ 文本文件写入 ============
+$('#btnDownloadText').onclick = () => {
+  const name = $('#txtFilename').value.trim() || 'file.txt';
+  const content = $('#txtContent').value;
+  const encoding = $('#txtEncoding').value;
+  let blob;
+  if (encoding === 'utf-8') blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  else if (encoding === 'utf-16') blob = new Blob([content], { type: 'text/plain;charset=utf-16' });
+  else { // GBK 近似用 utf-8，浏览器不直接支持 GBK 编码
+    blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    toast('浏览器限制：GBK 将以 UTF-8 保存', 'warning');
+  }
+  downloadBlob(blob, name);
+  toast(`已下载 ${name}`);
+};
+$('#btnPreviewText').onclick = () => openPreview($('#txtFilename').value || 'preview.txt', new TextEncoder().encode($('#txtContent').value));
+$('#btnClearText').onclick = () => { $('#txtContent').value = ''; toast('已清空'); };
+
+// ============ 二进制/十六进制写入 ============
+function parseHexInput(str) {
+  const cleaned = str.replace(/[^0-9a-fA-F]/g, '');
+  if (cleaned.length % 2 !== 0) throw new Error('十六进制长度必须为偶数');
+  const arr = new Uint8Array(cleaned.length / 2);
+  for (let i = 0; i < cleaned.length; i += 2) arr[i/2] = parseInt(cleaned.slice(i, i+2), 16);
+  return arr;
+}
+$('#btnDownloadBin').onclick = () => {
+  try {
+    const name = $('#binFilename').value.trim() || 'data.bin';
+    const bytes = parseHexInput($('#binHexInput').value);
+    downloadBlob(new Blob([bytes]), name);
+    toast(`已下载 ${name} (${bytes.length} 字节)`);
+  } catch (e) { toast('错误: ' + e.message, 'error'); }
+};
+$('#btnPreviewBin').onclick = () => {
+  try { openPreview('hex-preview.bin', parseHexInput($('#binHexInput').value)); }
+  catch (e) { toast('错误: ' + e.message, 'error'); }
+};
+$('#btnLoadFileBin').onclick = () => $('#binFileInputHidden').click();
+$('#btnClearBin').onclick = () => { $('#binHexInput').value = ''; toast('已清空'); };
+
+// 隐藏的文件输入用于加载二进制
+const binFileInput = document.createElement('input');
+binFileInput.type = 'file';
+binFileInput.id = 'binFileInputHidden';
+binFileInput.style.display = 'none';
+binFileInput.onchange = async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  $('#binHexInput').value = formatHex(bytes);
+  toast(`已加载 ${file.name} (${bytes.length} 字节)`);
+};
+document.body.appendChild(binFileInput);
+
+function formatHex(bytes) {
+  let out = '';
+  for (let i = 0; i < bytes.length; i++) {
+    out += bytes[i].toString(16).padStart(2, '0').toUpperCase();
+    if ((i + 1) % 16 === 0) out += '\n';
+    else if (i + 1 < bytes.length) out += ' ';
+  }
+  return out;
+}
+
+// ============ 模板生成 ============
+$('#tplType').onchange = () => {
+  const v = $('#tplType').value;
+  $('#tplFilename').value = (v === 'gitignore' ? '.gitignore' : (v === 'license' ? 'LICENSE' : 'template.' + EXT_MAP[v]));
+};
+$('#btnDownloadTpl').onclick = () => {
+  const type = $('#tplType').value;
+  const name = $('#tplFilename').value.trim() || 'template.' + EXT_MAP[type];
+  downloadBlob(new Blob([TEMPLATES[type]], { type: 'text/plain;charset=utf-8' }), name);
+  toast(`已生成 ${name}`);
+};
+$('#btnPreviewTpl').onclick = () => {
+  const type = $('#tplType').value;
+  openPreview('template.' + EXT_MAP[type], new TextEncoder().encode(TEMPLATES[type]));
+};
+
+// ============ 拖拽上传与预览 ============
+const dropZone = $('#dropZone');
+const fileInput = $('#fileInput');
+['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('drag-over'); }));
+['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('drag-over'); }));
+dropZone.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
+dropZone.onclick = () => fileInput.click();
+fileInput.onchange = e => handleFiles(e.target.files);
+
+function handleFiles(files) {
+  if (!files.length) return;
+  [...files].forEach(f => renderFileItem(f));
+  fileInput.value = '';
+}
+
+function renderFileItem(file) {
+  const list = $('#fileList');
+  const item = document.createElement('div');
+  item.className = 'file-item';
+  const icon = getFileIcon(file.name, file.type);
+  item.innerHTML = `
+    <span class="file-icon">${icon}</span>
+    <div class="file-info">
+      <div class="file-name">${escapeHtml(file.name)}</div>
+      <div class="file-meta">${fmtBytes(file.size)} · ${file.type || '未知类型'} · 最后修改: ${new Date(file.lastModified).toLocaleString()}</div>
+    </div>
+    <div class="file-actions">
+      <button class="btn secondary btn-preview" data-name="${escapeHtml(file.name)}">👁 预览</button>
+      <button class="btn secondary btn-download" data-name="${escapeHtml(file.name)}">📥 下载</button>
+      <button class="btn secondary btn-hash" data-name="${escapeHtml(file.name)}">🔐 哈希</button>
+      <button class="btn danger btn-remove">✕</button>
+    </div>
+  `;
+  const blobUrl = URL.createObjectURL(file);
+  item.querySelector('.btn-preview').onclick = () => openPreview(file.name, file);
+  item.querySelector('.btn-download').onclick = () => downloadBlob(file.slice(), file.name);
+  item.querySelector('.btn-hash').onclick = () => computeHash(file).then(h => { toast('哈希已计算，查看工具箱', 'success'); showHashResults(file.name, h); switchTab('hash'); });
+  item.querySelector('.btn-remove').onclick = () => { URL.revokeObjectURL(blobUrl); item.remove(); };
+  list.appendChild(item);
+}
+
+function getFileIcon(name, type) {
+  const ext = name.split('.').pop().toLowerCase();
+  if (type?.startsWith('image/')) return '🖼';
+  if (type?.startsWith('video/')) return '🎬';
+  if (type?.startsWith('audio/')) return '🎵';
+  if (type?.startsWith('text/') || ['md','txt','json','js','ts','jsx','tsx','html','css','yaml','yml','toml','xml','csv','py','rs','go','java','cpp','c','h','php','rb','swift','kt','sh','bat','sql'].includes(ext)) return '📄';
+  if (['zip','7z','rar','tar','gz','bz2','xz'].includes(ext)) return '📦';
+  if (['pdf'].includes(ext)) return '📕';
+  if (['exe','msi','apk','app','dmg'].includes(ext)) return '⚙️';
+  return '📎';
+}
+
+// ============ 预览模态框 ============
+const previewModal = $('#previewModal');
+const previewTitle = $('#previewTitle');
+const previewContent = $('#previewContent');
+$('#previewClose').onclick = closePreview;
+previewModal.onclick = e => { if (e.target === previewModal) closePreview(); };
+
+function closePreview() { previewModal.classList.remove('open'); previewContent.innerHTML = ''; }
+
+async function openPreview(name, source) {
+  previewTitle.textContent = name;
+  previewContent.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--muted);">加载中...</div>';
+  previewModal.classList.add('open');
+
+  let bytes;
+  if (source instanceof File || source instanceof Blob) bytes = new Uint8Array(await source.arrayBuffer());
+  else if (source instanceof Uint8Array) bytes = source;
+  else bytes = new TextEncoder().encode(String(source));
+
+  const ext = name.split('.').pop().toLowerCase();
+  const type = detectMime(bytes, ext);
+
+  try {
+    if (type.startsWith('image/')) {
+      const url = URL.createObjectURL(new Blob([bytes], { type }));
+      previewContent.innerHTML = `<img src="${url}" alt="${escapeHtml(name)}" onload="URL.revokeObjectURL(this.src)">`;
+    } else if (type.startsWith('video/')) {
+      const url = URL.createObjectURL(new Blob([bytes], { type }));
+      previewContent.innerHTML = `<video controls autoplay src="${url}"></video>`;
+    } else if (type.startsWith('audio/')) {
+      const url = URL.createObjectURL(new Blob([bytes], { type }));
+      previewContent.innerHTML = `<audio controls autoplay src="${url}"></audio>`;
+    } else if (type === 'application/pdf') {
+      const url = URL.createObjectURL(new Blob([bytes], { type }));
+      previewContent.innerHTML = `<iframe src="${url}" style="width:100%;height:70vh;border:none;"></iframe>`;
+    } else if (isTextFile(bytes, ext)) {
+      const text = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+      previewContent.innerHTML = `<pre>${escapeHtml(text)}</pre>`;
+    } else {
+      previewContent.innerHTML = renderHexDump(bytes);
+    }
+  } catch (e) {
+    previewContent.innerHTML = `<pre style="color:var(--danger);">预览失败: ${e.message}</pre>`;
+  }
+}
+
+function detectMime(bytes, ext) {
+  // 简单的魔数检测
+  if (bytes.length >= 4) {
+    const h = bytes[0].toString(16) + bytes[1].toString(16) + bytes[2].toString(16) + bytes[3].toString(16);
+    if (h.startsWith('89504e47')) return 'image/png';
+    if (h.startsWith('ffd8ff')) return 'image/jpeg';
+    if (h.startsWith('47494638')) return 'image/gif';
+    if (h.startsWith('52494646') && bytes[8] === 0x57 && bytes[9] === 0x45) return 'image/webp';
+    if (h.startsWith('000000') && (bytes[4] === 0x66 || bytes[4] === 0x6d)) return 'video/mp4';
+    if (h.startsWith('25504446')) return 'application/pdf';
+    if (h.startsWith('504b0304') || h.startsWith('504b0506') || h.startsWith('504b0708')) return 'application/zip';
+    if (h.startsWith('377abcaf')) return 'application/x-7z-compressed';
+    if (h.startsWith('52617221')) return 'application/x-rar';
+  }
+  const textExts = ['txt','md','json','js','ts','jsx','tsx','html','css','yaml','yml','toml','xml','csv','py','rs','go','java','cpp','c','h','php','rb','swift','kt','sh','bat','sql','log','ini','cfg','conf','properties'];
+  if (textExts.includes(ext)) return 'text/plain';
+  return 'application/octet-stream';
+}
+
+function isTextFile(bytes, ext) {
+  const textExts = ['txt','md','json','js','ts','jsx','tsx','html','css','yaml','yml','toml','xml','csv','py','rs','go','java','cpp','c','h','php','rb','swift','kt','sh','bat','sql','log','ini','cfg','conf','properties'];
+  if (textExts.includes(ext)) return true;
+  // 检测是否包含大量非打印字符
+  let nonPrint = 0;
+  for (let i = 0; i < Math.min(bytes.length, 8192); i++) {
+    const b = bytes[i];
+    if (b !== 9 && b !== 10 && b !== 13 && (b < 32 || b > 126)) nonPrint++;
+  }
+  return nonPrint / Math.min(bytes.length, 8192) < 0.1;
+}
+
+function renderHexDump(bytes) {
+  const lines = [];
+  for (let i = 0; i < bytes.length; i += 16) {
+    const chunk = bytes.slice(i, i + 16);
+    const addr = i.toString(16).padStart(8, '0').toUpperCase();
+    const hex = [...chunk].map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+    const ascii = [...chunk].map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
+    lines.push(`<div class="hex-line"><span class="hex-addr">${addr}</span><span class="hex-bytes">${hex}</span><span class="hex-ascii">${ascii}</span></div>`);
+  }
+  return `<div class="hex">${lines.join('')}</div>`;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
+}
+
+// ============ 哈希计算 ============
+async function computeHash(file) {
+  const buf = await file.arrayBuffer();
+  const [md5, sha1, sha256, sha512] = await Promise.all([
+    crypto.subtle.digest('MD5', buf),
+    crypto.subtle.digest('SHA-1', buf),
+    crypto.subtle.digest('SHA-256', buf),
+    crypto.subtle.digest('SHA-512', buf),
+  ]);
+  return { md5: toHex(md5), sha1: toHex(sha1), sha256: toHex(sha256), sha512: toHex(sha512) };
+}
+function toHex(buf) { return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join(''); }
+
+function showHashResults(name, hashes) {
+  $('#hashResults').innerHTML = `
+    <div style="font-weight:600;margin-bottom:8px;">${escapeHtml(name)}</div>
+    <div class="checksum-item"><span>MD5</span><code>${hashes.md5}</code></div>
+    <div class="checksum-item"><span>SHA-1</span><code>${hashes.sha1}</code></div>
+    <div class="checksum-item"><span>SHA-256</span><code>${hashes.sha256}</code></div>
+    <div class="checksum-item"><span>SHA-512</span><code>${hashes.sha512}</code></div>
+  `;
+}
+
+const hashDropZone = $('#hashDropZone');
+const hashFileInput = $('#hashFileInput');
+['dragenter','dragover'].forEach(ev => hashDropZone.addEventListener(ev, e => { e.preventDefault(); hashDropZone.classList.add('drag-over'); }));
+['dragleave','drop'].forEach(ev => hashDropZone.addEventListener(ev, e => { e.preventDefault(); hashDropZone.classList.remove('drag-over'); }));
+hashDropZone.addEventListener('drop', e => handleHashFiles(e.dataTransfer.files));
+hashDropZone.onclick = () => hashFileInput.click();
+hashFileInput.onchange = e => handleHashFiles(e.target.files);
+
+async function handleHashFiles(files) {
+  if (!files.length) return;
+  for (const f of [...files]) {
+    const h = await computeHash(f);
+    showHashResults(f.name, h);
+  }
+  hashFileInput.value = '';
+  toast(`已计算 ${files.length} 个文件哈希`, 'success');
+}
+
+// ============ 格式转换 ============
+$('#convFileInput').onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  const buf = await f.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  convertBytes(bytes, $('#convTarget').value);
+  e.target.value = '';
+};
+$('#convTarget').onchange = () => {
+  const f = $('#convFileInput').files[0];
+  if (f) { f.arrayBuffer().then(buf => convertBytes(new Uint8Array(buf), $('#convTarget').value)); }
+};
+$('#btnConvert').onclick = () => $('#convFileInput').click();
+$('#btnCopyConv').onclick = () => copyText($('#convResult').value);
+
+function convertBytes(bytes, target) {
+  let result = '';
+  switch (target) {
+    case 'base64': result = btoa(String.fromCharCode(...bytes)); break;
+    case 'hex': result = formatHex(bytes); break;
+    case 'text': result = new TextDecoder('utf-8', { fatal: false }).decode(bytes); break;
+    case 'dataurl': {
+      const mime = detectMime(bytes, '');
+      result = `data:${mime};base64,${btoa(String.fromCharCode(...bytes))}`;
+      break;
+    }
+  }
+  $('#convResult').value = result;
+  toast('转换完成');
+}
+
+// ============ 分割/合并 ============
+$('#btnSplit').onclick = async () => {
+  const f = $('#splitFileInput').files[0]; if (!f) { toast('请先选择文件', 'error'); return; }
+  const sizeKB = parseInt($('#splitSize').value) * 1024;
+  const buf = await f.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  const parts = Math.ceil(bytes.length / sizeKB);
+  const baseName = f.name.replace(/\.[^.]+$/, '');
+  for (let i = 0; i < parts; i++) {
+    const start = i * sizeKB;
+    const end = Math.min(start + sizeKB, bytes.length);
+    const part = bytes.slice(start, end);
+    downloadBlob(new Blob([part]), `${baseName}.part${String(i+1).padStart(3,'0')}`);
+  }
+  $('#splitResult').innerHTML = `<div style="color:var(--success);margin-top:8px;">已分割为 ${parts} 个文件，每个约 ${fmtBytes(sizeKB)}</div>`;
+  toast(`分割完成: ${parts} 个文件`);
+};
+
+$('#btnMerge').onclick = async () => {
+  const files = $('#splitFileInput').files; if (!files.length) { toast('请选择要合并的分片文件', 'error'); return; }
+  const sorted = [...files].sort((a,b) => a.name.localeCompare(b.name));
+  const chunks = [];
+  for (const f of sorted) chunks.push(new Uint8Array(await f.arrayBuffer()));
+  const totalLen = chunks.reduce((s, c) => s + c.length, 0);
+  const merged = new Uint8Array(totalLen);
+  let offset = 0;
+  for (const c of chunks) { merged.set(c, offset); offset += c.length; }
+  const baseName = sorted[0].name.replace(/\.part\d+$/, '');
+  downloadBlob(new Blob([merged]), baseName + '_merged');
+  $('#splitResult').innerHTML = `<div style="color:var(--success);margin-top:8px;">已合并 ${sorted.length} 个分片，总计 ${fmtBytes(totalLen)}</div>`;
+  toast('合并完成');
+};
+
+// ============ 文件信息 ============
+const infoDropZone = $('#infoDropZone');
+const infoFileInput = $('#infoFileInput');
+['dragenter','dragover'].forEach(ev => infoDropZone.addEventListener(ev, e => { e.preventDefault(); infoDropZone.classList.add('drag-over'); }));
+['dragleave','drop'].forEach(ev => infoDropZone.addEventListener(ev, e => { e.preventDefault(); infoDropZone.classList.remove('drag-over'); }));
+infoDropZone.addEventListener('drop', e => handleInfoFiles(e.dataTransfer.files));
+infoDropZone.onclick = () => infoFileInput.click();
+infoFileInput.onchange = e => handleInfoFiles(e.target.files);
+
+async function handleInfoFiles(files) {
+  if (!files.length) return;
+  const f = files[0];
+  const buf = await f.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  const ext = f.name.split('.').pop().toLowerCase();
+  const mime = detectMime(bytes, ext);
+  const hashes = await computeHash(f);
+  $('#infoResult').innerHTML = `
+    <div style="display:grid;gap:8px;font-family:ui-monospace,monospace;font-size:0.85rem;">
+      <div><b>文件名:</b> ${escapeHtml(f.name)}</div>
+      <div><b>大小:</b> ${fmtBytes(f.size)} (${f.size} 字节)</div>
+      <div><b>类型:</b> ${f.type || mime}</div>
+      <div><b>扩展名:</b> .${ext}</div>
+      <div><b>最后修改:</b> ${new Date(f.lastModified).toLocaleString()}</div>
+      <div><b>MIME 检测:</b> ${mime}</div>
+      <div><b>是否文本:</b> ${isTextFile(bytes, ext) ? '是' : '否'}</div>
+      <hr style="border-color:var(--border);margin:8px 0;">
+      <div><b>MD5:</b> ${hashes.md5}</div>
+      <div><b>SHA-1:</b> ${hashes.sha1}</div>
+      <div><b>SHA-256:</b> ${hashes.sha256}</div>
+      <div><b>SHA-512:</b> ${hashes.sha512}</div>
+      <hr style="border-color:var(--border);margin:8px 0;">
+      <div><b>文件头 (前32字节):</b></div>
+      <div class="hex">${renderHexDump(bytes.slice(0, 32)).replace(/<div class="hex">|<\/div>/g, '')}</div>
+    </div>
+  `;
+  infoFileInput.value = '';
+}
+
+function switchTab(name) {
+  const tab = document.querySelector(`.tab[data-tab="${name}"]`);
+  if (tab) tab.click();
+}
+
+// ============ 键盘快捷键 ============
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePreview();
+});
+</script>
+</body>
+</html>
